@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: ny-power-mosquitto
+  labels:
+    app: mqtt
+spec:
+  type: NodePort
+  ports:
+  - port: 1883
+    name: mqtt
+    nodePort: 30000
+  selector:
+    app: mqtt
+---
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ny-power-mosquitto
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: mqtt
+    spec:
+      containers:
+      - name: ny-power-mosquitto
+        image: sdague/ny-power-mosquitto
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 1883
+        # env:
+        # - name: OCR_HOST
+        #   value: rotisserie-ocr:3001
+        # - name: token
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: rotisserie-secrets
+        #       key: token
+        # - name: clientID
+        #   valueFrom:
+        #     secretKeyRef:
+        #       name: rotisserie-secrets
+        #       key: clientID
+          #USE SECRET
