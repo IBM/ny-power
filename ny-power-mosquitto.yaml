@@ -5,11 +5,12 @@ metadata:
   labels:
     app: mqtt
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
   - port: 1883
-    name: mqtt
-    nodePort: 30000
+    targetPort: 1883
+    name: ny-power-mosquitto
+    protocol: TCP
   selector:
     app: mqtt
 ---
@@ -26,7 +27,7 @@ spec:
     spec:
       containers:
       - name: ny-power-mosquitto
-        image: sdague/ny-power-mosquitto
+        image: registry.ng.bluemix.net/sdague/ny-power-mosquitto
         imagePullPolicy: Always
         ports:
         - containerPort: 1883
