@@ -54,9 +54,11 @@ def send_last_to_mqtt(data, last_sent=""):
         if r[0] == last and r[0] != last_sent:
             _LOGGER.info("Found new data to publish: %s", r)
             client.publish("ny-power/fuel-mix/{0}".format(r[2]),
-                           json.dumps(dict(ts=r[0], power=r[3], units="kW")),
+                           json.dumps(
+                               dict(ts=r[0], power=int(float(r[3])), units="kW")),
                            qos=1)
             retval = r[0]
+    _LOGGER.info("Last connect time is %s", retval)
     if retval is not None:
         client.publish("ny-power/updated/fuel-mix",
                        json.dumps(dict(ts=r[0])), qos=1, retain=True)
