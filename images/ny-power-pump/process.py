@@ -20,6 +20,10 @@ logging.basicConfig(
 
 HOST = os.environ.get("MQTT_HOST")
 
+def get_pass():
+    with open("/etc/secret-volume/password") as f:
+        return f.read()
+
 def collect_data():
     now = datetime.datetime.now()
     url = FUEL_MIX.format(now.strftime("%Y%m%d"))
@@ -43,6 +47,7 @@ def collect_data():
 
 def send_last_to_mqtt(data, last_sent=""):
     client = mqtt.Client(clean_session=True)
+    client.username_pw_set("pump", get_pass())
     client.connect(HOST)
 
     last = ""

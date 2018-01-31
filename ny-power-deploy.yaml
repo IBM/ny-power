@@ -9,9 +9,17 @@ spec:
       labels:
         app: mqtt
     spec:
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: mqtt-pump-secret
       containers:
       - name: ny-power-mosquitto
         image: registry.ng.bluemix.net/sdague/ny-power-mosquitto
+        volumeMounts:
+          - name: secret-volume
+            readOnly: true
+            mountPath: "/etc/secret-volume"
         imagePullPolicy: Always
         ports:
         - containerPort: 1883
@@ -27,10 +35,18 @@ spec:
       labels:
         app: pump
     spec:
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: mqtt-pump-secret
       containers:
       - name: ny-power-pump
         image: registry.ng.bluemix.net/sdague/ny-power-pump
         imagePullPolicy: Always
+        volumeMounts:
+          - name: secret-volume
+            readOnly: true
+            mountPath: "/etc/secret-volume"
         env:
         - name: MQTT_HOST
           value: ny-power-mosquitto

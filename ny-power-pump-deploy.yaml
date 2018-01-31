@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ny-power-pump
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: pump
+    spec:
+      volumes:
+      - name: secret-volume
+        secret:
+          secretName: mqtt-pump-secret
+      containers:
+      - name: ny-power-pump
+        image: registry.ng.bluemix.net/sdague/ny-power-pump
+        imagePullPolicy: Always
+        volumeMounts:
+          - name: secret-volume
+            readOnly: true
+            mountPath: "/etc/secret-volume"
+        env:
+        - name: MQTT_HOST
+          value: ny-power-mosquitto
