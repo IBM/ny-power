@@ -31,11 +31,11 @@ spec:
       - name: ny-power-pump
         image: registry.ng.bluemix.net/sdague/ny-power-pump
         imagePullPolicy: Always
+        env:
+        - name: MQTT_HOST
+          value: ny-power-mosquitto
         # ports:
         # - containerPort: 1883
-        # env:
-        # - name: OCR_HOST
-        #   value: rotisserie-ocr:3001
         # - name: token
         #   valueFrom:
         #     secretKeyRef:

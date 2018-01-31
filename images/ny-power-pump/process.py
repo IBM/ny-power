@@ -5,6 +5,7 @@ import datetime
 import json
 import logging
 import io
+import os
 import time
 import urllib.request
 
@@ -13,10 +14,11 @@ import paho.mqtt.client as mqtt
 FUEL_MIX="http://mis.nyiso.com/public/csv/rtfuelmix/{0}rtfuelmix.csv"
 
 _LOGGER = logging.getLogger(__name__)
-logging.basicConfig(ormat='%(asctime)s %(levelname)s %(message)s',
-                    level=logging.DEBUG)
+logging.basicConfig(
+    format='%(asctime)s %(levelname)s %(message)s',
+    level=logging.DEBUG)
 
-HOST = "ny-power-mosquitto"
+HOST = os.environ.get("MQTT_HOST")
 
 def collect_data():
     now = datetime.datetime.now()
@@ -50,13 +52,14 @@ def send_last_to_mqtt(data, last_sent=""):
     retval = None
     for r in data:
         if r[0] == last and r[0] != last_sent:
-            print("Found new data to publish: %s" % r)
+            _LOGGER.info("Found new data to publish: %s", r)
             client.publish("ny-power/fuel-mix/{0}".format(r[2]),
-                           json.dumps(dict(ts=r[0], power=r[3], units="kW")))
+                           json.dumps(dict(ts=r[0], power=r[3], units="kW")),
+                           qos=1)
             retval = r[0]
     if retval is not None:
         client.publish("ny-power/updated/fuel-mix",
-                       json.dumps(dict(ts=r[0])), retain=True)
+                       json.dumps(dict(ts=r[0])), qos=1, retain=True)
     client.disconnect()
     return retval
 
@@ -64,11 +67,12 @@ def send_last_to_mqtt(data, last_sent=""):
 def main():
     last = ""
     while(True):
+        _LOGGER.info("Starting main loop!")
         data = collect_data()
         ret_last = send_last_to_mqtt(data, last)
         if ret_last is not None:
             last = ret_last
-        print("Sleeping")
+        _LOGGER.info("Sleeping")
         time.sleep(60)
 
 

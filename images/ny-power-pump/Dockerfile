@@ -10,4 +10,4 @@ RUN pip3 install -U paho-mqtt
 
 COPY process.py /root/process.py
 
-CMD ["python3 /root/process.py"]
+CMD /usr/bin/python3 /root/process.py
