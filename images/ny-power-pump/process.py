@@ -128,7 +128,7 @@ def catchup_mqtt(client, data):
             strtime = row[0]
             fuel_name = row[2]
             kW = int(float(row[3]))
-
+            _LOGGER.info("publish ny-power/fuel-mix/%s => %s", (fuel_name, strtime))
             client.publish("ny-power/fuel-mix/{0}".format(fuel_name),
                            json.dumps(
                                dict(ts=strtime, power=kW, units="kW")),
