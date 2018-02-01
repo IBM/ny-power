@@ -138,7 +138,7 @@ def catchup_mqtt(client, data):
 
 
         # send out co2 batch
-        co2_per_kW = total_co2 / kW
+        co2_per_kW = total_co2 / total_kW
         client.publish("ny-power/co2",
                        json.dumps(dict(ts=strtime, emissions=co2_per_kW, units="kg / kWh")),
                        qos=1, retain=True)
@@ -150,8 +150,8 @@ def catchup_mqtt(client, data):
 def main():
     global LAST
 
+    client = mqtt_client()
     while True:
-        client = mqtt_client()
 
         for x in range(60):
             if LAST > 0:
@@ -163,7 +163,6 @@ def main():
 
         data = collect_data()
         catchup_mqtt(client, data)
-        client.disconnect()
 
         _LOGGER.info("Sleeping for the next cycle")
         time.sleep(60)
