@@ -20,3 +20,7 @@ mqtt-service: mqtt
 
 mqtt-secret:
 	kubectl create secret generic mqtt-pump-secret --from-literal=password=$(shell pwgen 16 1)
+
+token:
+	kubectl config view -o jsonpath='{.users[0].user.auth-provider.config.id-token}'
+	@echo
