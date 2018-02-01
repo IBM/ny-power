@@ -23,4 +23,4 @@ spec:
             mountPath: "/etc/secret-volume"
         env:
         - name: MQTT_HOST
-          value: ny-power-mosquitto
+          value: ny-power-mqtt

@@ -1,7 +1,7 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: ny-power-mosquitto
+  name: ny-power-mqtt
   labels:
     app: mqtt
 spec:
@@ -9,7 +9,7 @@ spec:
   ports:
   - port: 1883
     targetPort: 1883
-    name: ny-power-mosquitto
+    name: ny-power-mqtt
     protocol: TCP
   selector:
     app: mqtt
