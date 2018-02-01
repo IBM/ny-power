@@ -2,7 +2,7 @@ MQTT_IMAGE=ny-power-mqtt
 PUMP_IMAGE=ny-power-pump
 IMAGE_REG=registry.ng.bluemix.net/sdague/
 
-all: mqtt-service mqtt pump
+all: mqtt pump
 
 mqtt:
 	bx cr build -t $(IMAGE_REG)$(MQTT_IMAGE) images/$(MQTT_IMAGE)

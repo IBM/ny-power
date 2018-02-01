@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import collections
 import csv
 import datetime
 import json
@@ -19,6 +20,8 @@ logging.basicConfig(
     level=logging.DEBUG)
 
 HOST = os.environ.get("MQTT_HOST")
+
+LAST = 0
 
 # PWR in MWh
 # CO2 in Metric Tons
@@ -68,63 +71,102 @@ def collect_data():
     # csv.reader
     out.seek(0)
     reader = csv.reader(out, quoting=csv.QUOTE_NONE)
-    data = []
-    last = ""
+    data = collections.OrderedDict()
+
+    # this folds up the data as a hash area keyed by timestamp for
+    # easy sorting
     for row in reader:
-        last = row[0]
-        data.append(row)
+        try:
+            timestamp = timestamp2epoch(row[0])
+            if timestamp in data:
+                data[timestamp].append(row)
+            else:
+                data[timestamp] = [row]
+        except ValueError:
+            # skip a parse error on epoch, as it's table headers.
+            pass
 
     return data
 
-def send_last_to_mqtt(data, last_sent=""):
+
+def on_connect(client, userdata, flags, rc):
+    _LOGGER.info("Connected to mqtt bus")
+    client.subscribe("ny-power/updated/fuel-mix")
+
+# NOTE(sdague): there is a bootstrapping problem here
+def on_message(client, userdata, msg):
+    if msg.topic == "ny-power/updated/fuel-mix":
+        global LAST
+        data = json.loads(msg.payload.decode('utf-8'))
+        LAST = timestamp2epoch(data["ts"])
+
+
+def timestamp2epoch(ts):
+    return int(datetime.datetime.strptime(ts, "%m/%d/%Y %H:%M:%S").strftime("%s"))
+
+def mqtt_client():
     client = mqtt.Client(clean_session=True)
     client.username_pw_set("pump", get_pass())
+    client.on_connect = on_connect
+    client.on_message = on_message
     client.connect(HOST)
+    client.loop_start()
+    return client
 
-    last = ""
-    for r in data:
-        last = r[0]
+def catchup_mqtt(client, data):
+    global LAST
+    now = LAST
 
-    retval = None
-    kW = 0
-    co2 = 0
-    for r in data:
-        if r[0] == last and r[0] != last_sent:
-            _LOGGER.info("Found new data to publish: %s", r)
-            client.publish("ny-power/fuel-mix/{0}".format(r[2]),
+    for timestamp, rowset in data.items():
+        if timestamp <= now:
+            continue
+
+        total_kW = 0
+        total_co2 = 0
+
+        for row in rowset:
+            strtime = row[0]
+            fuel_name = row[2]
+            kW = int(float(row[3]))
+
+            client.publish("ny-power/fuel-mix/{0}".format(fuel_name),
                            json.dumps(
-                               dict(ts=r[0], power=int(float(r[3])), units="kW")),
+                               dict(ts=strtime, power=kW, units="kW")),
                            qos=1, retain=True)
-            retval = r[0]
-            kW += float(r[3])
-            co2 += float(r[3]) * co2_for_fuel(r[2])
+            total_kW += kW
+            total_co2 += kW * co2_for_fuel(fuel_name)
 
-    _LOGGER.info("Last connect time is %s", retval)
 
-    if kW:
-        co2_per_kW = co2 / kW
+        # send out co2 batch
+        co2_per_kW = total_co2 / kW
         client.publish("ny-power/co2",
-                       json.dumps(dict(ts=retval, emissions=co2_per_kW, units="kg / kWh")),
+                       json.dumps(dict(ts=strtime, emissions=co2_per_kW, units="kg / kWh")),
                        qos=1, retain=True)
 
-    if retval is not None:
         client.publish("ny-power/updated/fuel-mix",
-                       json.dumps(dict(ts=retval)), qos=1, retain=True)
-    client.disconnect()
-    return retval
+                       json.dumps(dict(ts=strtime)), qos=1, retain=True)
 
 
 def main():
-    last = ""
-    while(True):
-        _LOGGER.info("Starting main loop!")
-        data = collect_data()
-        ret_last = send_last_to_mqtt(data, last)
-        if ret_last is not None:
-            last = ret_last
-        _LOGGER.info("Sleeping")
-        time.sleep(60)
+    global LAST
 
+    while True:
+        client = mqtt_client()
+
+        for x in range(60):
+            if LAST > 0:
+                break
+            _LOGGER.info("Waiting for LAST to increase!")
+            time.sleep(1)
+        else:
+            LAST = 1
+
+        data = collect_data()
+        catchup_mqtt(client, data)
+        client.disconnect()
+
+        _LOGGER.info("Sleeping for the next cycle")
+        time.sleep(60)
 
 if __name__ == "__main__":
     main()
