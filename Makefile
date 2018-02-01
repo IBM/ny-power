@@ -17,3 +17,6 @@ pump:
 mqtt-service: mqtt
 	kubectl delete -f deploy/ny-power-svc.yaml || /bin/true
 	kubectl create -f deploy/ny-power-svc.yaml
+
+mqtt-secret:
+	kubectl create secret generic mqtt-pump-secret --from-literal=password=$(shell pwgen 16 1)
