@@ -24,3 +24,5 @@ mqtt-secret:
 token:
 	kubectl config view -o jsonpath='{.users[0].user.auth-provider.config.id-token}'
 	@echo
+	@echo
+	@echo Run \"kubectl proxy\" and use the above token
