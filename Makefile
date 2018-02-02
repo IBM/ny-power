@@ -6,17 +6,20 @@ all: mqtt pump
 
 mqtt:
 	bx cr build -t $(IMAGE_REG)$(MQTT_IMAGE) images/$(MQTT_IMAGE)
-	kubectl delete -f deploy/ny-power-mqtt-deploy.yaml || /bin/true
-	kubectl create -f deploy/ny-power-mqtt-deploy.yaml
+	kubectl apply -f deploy/ny-power-mqtt-deploy.yaml
+
+mqtt-delete:
+	kubectl delete -f deploy/ny-power-mqtt-deploy.yaml
+
+pump-delete:
+	kubectl delete -f deploy/ny-power-pump-deploy.yaml
 
 pump:
 	bx cr build -t $(IMAGE_REG)$(PUMP_IMAGE) images/$(PUMP_IMAGE)
-	kubectl delete -f deploy/ny-power-pump-deploy.yaml || /bin/true
-	kubectl create -f deploy/ny-power-pump-deploy.yaml
+	kubectl apply -f deploy/ny-power-pump-deploy.yaml
 
 mqtt-service: mqtt
-	kubectl delete -f deploy/ny-power-svc.yaml || /bin/true
-	kubectl create -f deploy/ny-power-svc.yaml
+	kubectl apply -f deploy/ny-power-svc.yaml
 
 mqtt-secret:
 	kubectl create secret generic mqtt-pump-secret --from-literal=password=$(shell pwgen 16 1)
