@@ -1,5 +1,6 @@
 MQTT_IMAGE=ny-power-mqtt
 PUMP_IMAGE=ny-power-pump
+INFLUXDB_IMAGE=ny-power-influxdb
 IMAGE_REG=registry.ng.bluemix.net/sdague/
 
 all: mqtt pump
@@ -10,6 +11,10 @@ mqtt:
 
 mqtt-delete:
 	kubectl delete -f deploy/ny-power-mqtt-deploy.yaml
+
+influxdb:
+	bx cr build -t $(IMAGE_REG)$(INFLUXDB_IMAGE) images/$(INFLUXDB_IMAGE)
+	kubectl apply -f deploy/ny-power-influxdb-deploy.yaml
 
 pump-delete:
 	kubectl delete -f deploy/ny-power-pump-deploy.yaml
