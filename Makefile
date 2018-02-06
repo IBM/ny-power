@@ -1,4 +1,5 @@
 MQTT_IMAGE=ny-power-mqtt
+API_IMAGE=ny-power-api
 PUMP_IMAGE=ny-power-pump
 INFLUXDB_IMAGE=ny-power-influxdb
 BACKLOG_IMAGE=ny-power-backlog
@@ -9,6 +10,10 @@ all: mqtt pump
 mqtt:
 	bx cr build -t $(IMAGE_REG)$(MQTT_IMAGE) images/$(MQTT_IMAGE)
 	kubectl apply -f deploy/ny-power-mqtt-deploy.yaml
+
+api:
+	bx cr build -t $(IMAGE_REG)$(API_IMAGE) images/$(API_IMAGE)
+	kubectl apply -f deploy/ny-power-api-deploy.yaml
 
 mqtt-delete:
 	kubectl delete -f deploy/ny-power-mqtt-deploy.yaml

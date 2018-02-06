@@ -1,0 +1,17 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: ny-power-api
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: api
+    spec:
+      containers:
+      - name: ny-power-api
+        image: registry.ng.bluemix.net/sdague/ny-power-api
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 80

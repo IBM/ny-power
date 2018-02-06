@@ -13,8 +13,7 @@ COPY run.sh /root/run.sh
 COPY acl_file.conf /etc/mosquitto/conf.d/acl_file.conf
 COPY mosquitto.conf /etc/mosquitto/mosquitto.conf
 
-RUN echo "port 1883" > /etc/mosquitto/conf.d/mqtt_port.conf
-
 EXPOSE 1883
+EXPOSE 1884
 
 CMD ["/root/run.sh"]

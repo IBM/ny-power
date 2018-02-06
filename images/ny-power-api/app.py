@@ -5,12 +5,12 @@ from influxdb import InfluxDBClient
 
 app = Flask(__name__)
 
-
-HOST = os.environ.get("INFLUXDB_HOST")
+INFLUXDB_HOST = os.environ.get("INFLUXDB_HOST")
+MQTT_HOST = os.environ.get("MQTT_HOST")
 
 @app.route("/")
-def hello():
-    return "Hello World!"
+def index():
+    return render_template("index.html", mqtt_host=MQTT_HOST)
 
 @app.route("/current/co2")
 def current_co2():

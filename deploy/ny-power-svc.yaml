@@ -11,5 +11,9 @@ spec:
     targetPort: 1883
     name: ny-power-mqtt
     protocol: TCP
+  - port: 1884
+    targetPort: 1884
+    name: ny-power-websocket
+    protocol: TCP
   selector:
     app: mqtt
