@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, jsonify
+from flask import Flask, jsonify, render_template
 from influxdb import InfluxDBClient
 
 app = Flask(__name__)

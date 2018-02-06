@@ -15,3 +15,8 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 80
+        env:
+          - name: INFLUXDB_HOST
+            value: ny-power-influxdb
+          - name: MQTT_HOST
+            value: mqtt.ny-power.org

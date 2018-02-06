@@ -13,6 +13,7 @@ mqtt:
 
 api:
 	bx cr build -t $(IMAGE_REG)$(API_IMAGE) images/$(API_IMAGE)
+	kubectl delete -f deploy/ny-power-api-deploy.yaml || /bin/true
 	kubectl apply -f deploy/ny-power-api-deploy.yaml
 
 mqtt-delete:

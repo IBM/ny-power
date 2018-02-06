@@ -12,4 +12,6 @@ RUN pip3 install -U influxdb
 COPY app.py /root/app.py
 COPY templates/ /root/templates/
 
-CMD FLASK_APP=app.py flask run
+EXPOSE 5000
+
+CMD LANG=C.UTF-8 LC_ALL=C.UTF-8 FLASK_APP=/root/app.py flask run
