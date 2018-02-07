@@ -3,6 +3,7 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/paho-mqtt/1.0.1/mqttws31.js"
           type="text/javascript"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://omnipotent.net/jquery.sparkline/2.1.2/jquery.sparkline.min.js"></script>
   <script language="javascript">
     // Create a client instance
     client = new Paho.MQTT.Client("{{ mqtt_host }}", Number("1884"), "clientId");
@@ -19,6 +20,7 @@
         // Once a connection has been made, make a subscription and send a message.
         console.log("onConnect");
         client.subscribe("ny-power/co2");
+        client.subscribe("ny-power/archive/co2_24h");
     }
 
     // called when the client loses its connection
@@ -26,6 +28,7 @@
         if (responseObject.errorCode !== 0) {
             console.log("onConnectionLost:"+responseObject.errorMessage);
         }
+        client.connect({onSuccess:onConnect});
     }
 
     // called when a message arrives
@@ -36,15 +39,20 @@
             $("#co2-per-kwh").html(Math.round(data.emissions * 1000));
             $("#co2-updated").html(data.ts);
         }
+        if (message.destinationName == "ny-power/archive/co2_24h") {
+            var data = JSON.parse(message.payloadString);
+            $("#sparkline").sparkline(data.data);
+        }
     }
   </script>
   </head>
   <body>
     <h1>The current NY ISO Grid CO2 / kWh</h1>
-    <h2>Current <span id="co2-per-kwh"></span> g / kWh</h2>
+    <h2>Current <span id="co2-per-kwh"></span> g / kWh <span id="sparkline"></span></h2>
 
     <div><i>(last
       updated: <span id="co2-updated"></span>)</i>
     </div>
+
   </body>
 </html>

@@ -1,5 +1,6 @@
 MQTT_IMAGE=ny-power-mqtt
 API_IMAGE=ny-power-api
+ARCHIVE_IMAGE=ny-power-archive
 PUMP_IMAGE=ny-power-pump
 INFLUXDB_IMAGE=ny-power-influxdb
 BACKLOG_IMAGE=ny-power-backlog
@@ -15,6 +16,11 @@ api:
 	bx cr build -t $(IMAGE_REG)$(API_IMAGE) images/$(API_IMAGE)
 	kubectl delete -f deploy/ny-power-api-deploy.yaml || /bin/true
 	kubectl apply -f deploy/ny-power-api-deploy.yaml
+
+archive:
+	bx cr build -t $(IMAGE_REG)$(ARCHIVE_IMAGE) images/$(ARCHIVE_IMAGE)
+	kubectl delete -f deploy/ny-power-archive-deploy.yaml || /bin/true
+	kubectl apply -f deploy/ny-power-archive-deploy.yaml
 
 mqtt-delete:
 	kubectl delete -f deploy/ny-power-mqtt-deploy.yaml
