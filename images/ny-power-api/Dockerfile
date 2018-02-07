@@ -14,4 +14,4 @@ COPY templates/ /root/templates/
 
 EXPOSE 5000
 
-CMD LANG=C.UTF-8 LC_ALL=C.UTF-8 FLASK_APP=/root/app.py flask run
+CMD LANG=C.UTF-8 LC_ALL=C.UTF-8 FLASK_APP=/root/app.py flask run --host=0.0.0.0

@@ -59,7 +59,9 @@ def get_pass():
         return f.read()
 
 def collect_data():
-    now = datetime.datetime.now()
+    # TODO(sdague): the containers run in UTC, the data thinks about
+    # thing in NY time.
+    now = datetime.datetime.now() - datetime.timedelta(hours=5)
     url = FUEL_MIX.format(now.strftime("%Y%m%d"))
 
     # unfortunately we can't quite connect urllib to csv
