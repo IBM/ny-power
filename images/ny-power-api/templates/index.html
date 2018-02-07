@@ -6,7 +6,7 @@
   <script src="https://omnipotent.net/jquery.sparkline/2.1.2/jquery.sparkline.min.js"></script>
   <script language="javascript">
     // Create a client instance
-    client = new Paho.MQTT.Client("{{ mqtt_host }}", Number("1884"), "clientId");
+    client = new Paho.MQTT.Client("{{ mqtt_host }}", Number("1884"), "client-" + Math.random());
 
     // set callback handlers
     client.onConnectionLost = onConnectionLost;
@@ -41,7 +41,11 @@
         }
         if (message.destinationName == "ny-power/archive/co2_24h") {
             var data = JSON.parse(message.payloadString);
-            $("#sparkline").sparkline(data.data);
+            $("#sparkline").sparkline(data.data, {
+                minSpotColor: '#04d604',
+                maxSpotColor: '#6b3300',
+                spotRadius: 3
+            });
         }
     }
   </script>
