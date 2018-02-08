@@ -18,11 +18,14 @@ FUEL_2016 = {
 
 # assume Dual Fuel systems consume 30% of state NG. That's probably low.
 FUEL_2016["Dual Fuel"] = {
-    "Power": (FUEL_2016["Petroleum"]["Power"] + (FUEL_2016["Natural Gas"]["Power"] * .3)),
-    "CO2": (FUEL_2016["Petroleum"]["CO2"] + (FUEL_2016["Natural Gas"]["CO2"] * .3)),
+    "Power": (FUEL_2016["Petroleum"]["Power"] +
+              (FUEL_2016["Natural Gas"]["Power"] * .3)),
+    "CO2": (FUEL_2016["Petroleum"]["CO2"] +
+            (FUEL_2016["Natural Gas"]["CO2"] * .3)),
 }
 
 # Calculate CO2 per kWh usage
+
 
 def co2_for_fuel(fuel):
     if fuel in FUEL_2016:
@@ -32,3 +35,16 @@ def co2_for_fuel(fuel):
         return co2per
     else:
         return 0.0
+
+
+def co2_rollup(rows):
+    total_kW = 0
+    total_co2 = 0
+
+    for row in rows:
+        fuel_name = row[2]
+        kW = int(float(row[3]))
+        total_kW += kW
+        total_co2 += kW * co2_for_fuel(fuel_name)
+    co2_per_kW = total_co2 / total_kW
+    return co2_per_kW

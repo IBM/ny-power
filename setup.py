@@ -39,7 +39,7 @@ setup(
     packages=find_packages(include=['nypower']),
     entry_points={
         'console_scripts': [
-            'nypower=nypower.cli:main',
+            'ny-power-pump=nypower.cmd.pump:main',
         ],
     },
     include_package_data=True,
