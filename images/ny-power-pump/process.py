@@ -20,6 +20,10 @@ logging.basicConfig(
     level=logging.DEBUG)
 
 HOST = os.environ.get("MQTT_HOST")
+TOPIC_UPSTREAM = "ny-power/upstream/"
+TOPIC_COMPUTED = "ny-power/computed/"
+TOPIC_STATUS = "ny-power/status/"
+TOPIC_UPDATED = "ny-power/status/fuel-mix/updated"
 
 LAST = 0
 
@@ -93,11 +97,11 @@ def collect_data():
 
 def on_connect(client, userdata, flags, rc):
     _LOGGER.info("Connected to mqtt bus")
-    client.subscribe("ny-power/updated/fuel-mix")
+    client.subscribe(TOPIC_UPDATED)
 
 # NOTE(sdague): there is a bootstrapping problem here
 def on_message(client, userdata, msg):
-    if msg.topic == "ny-power/updated/fuel-mix":
+    if msg.topic == TOPIC_UPDATED:
         global LAST
         data = json.loads(msg.payload.decode('utf-8'))
         LAST = timestamp2epoch(data["ts"])
@@ -130,8 +134,9 @@ def catchup_mqtt(client, data):
             strtime = row[0]
             fuel_name = row[2]
             kW = int(float(row[3]))
-            _LOGGER.info("publish ny-power/fuel-mix/%s => %s" % (fuel_name, strtime))
-            client.publish("ny-power/fuel-mix/{0}".format(fuel_name),
+            _LOGGER.info("%s => %s" % (topic, strtime))
+            topic = "{0}fuel-mix/{1}".format(TOPIC_UPSTREAM, fuel_name)
+            client.publish(topic,
                            json.dumps(
                                dict(ts=strtime, power=kW, units="kW")),
                            qos=1, retain=True)
@@ -141,11 +146,11 @@ def catchup_mqtt(client, data):
 
         # send out co2 batch
         co2_per_kW = total_co2 / total_kW
-        client.publish("ny-power/co2",
+        client.publish("{0}co2".format(TOPIC_COMPUTED),
                        json.dumps(dict(ts=strtime, emissions=co2_per_kW, units="kg / kWh")),
                        qos=1, retain=True)
 
-        client.publish("ny-power/updated/fuel-mix",
+        client.publish(TOPIC_UPDATED,
                        json.dumps(dict(ts=strtime)), qos=1, retain=True)
 
 

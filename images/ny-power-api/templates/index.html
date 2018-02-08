@@ -6,7 +6,7 @@
   <script src="https://omnipotent.net/jquery.sparkline/2.1.2/jquery.sparkline.min.js"></script>
   <script language="javascript">
     // Create a client instance
-    client = new Paho.MQTT.Client("{{ mqtt_host }}", Number("1884"), "client-" + Math.random());
+    client = new Paho.MQTT.Client("{{ mqtt_host }}", Number("80"), "client-" + Math.random());
 
     // set callback handlers
     client.onConnectionLost = onConnectionLost;

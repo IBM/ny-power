@@ -14,6 +14,6 @@ COPY acl_file.conf /etc/mosquitto/conf.d/acl_file.conf
 COPY mosquitto.conf /etc/mosquitto/mosquitto.conf
 
 EXPOSE 1883
-EXPOSE 1884
+EXPOSE 80
 
 CMD ["/root/run.sh"]
