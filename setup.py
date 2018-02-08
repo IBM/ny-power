@@ -36,7 +36,7 @@ setup(
     author="Sean Dague",
     author_email='sean@dague.net',
     url='https://github.com/sdague/nypower',
-    packages=find_packages(include=['nypower']),
+    packages=find_packages(),
     entry_points={
         'console_scripts': [
             'ny-power-pump=nypower.cmd.pump:main',
