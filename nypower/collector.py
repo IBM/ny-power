@@ -6,7 +6,7 @@ import collections
 import csv
 import datetime
 import io
-import urllib
+import urllib.request
 
 
 FUEL_MIX = "http://mis.nyiso.com/public/csv/rtfuelmix/{0}rtfuelmix.csv"
