@@ -23,7 +23,7 @@ LAST = 0
 
 def on_connect(client, userdata, flags, rc):
     _LOGGER.info("Connected to mqtt bus")
-    client.subscribe(mq.TOPIC_UPDATED)
+    client.subscribe(mq.TOPIC_FUEL_UPDATED)
 
 
 # NOTE(sdague): there is a bootstrapping problem here
