@@ -52,13 +52,13 @@ def catchup_mqtt(client, data):
         if reading.epoch <= now:
             continue
 
-        for fuel_name, kW in reading.fuels.items():
+        for fuel_name, MW in reading.fuels.items():
             topic = "{0}fuel-mix/{1}".format(mq.TOPIC_UPSTREAM, fuel_name)
             _LOGGER.info("%s => %s" % (topic, strtime))
 
             client.publish(topic,
                            json.dumps(
-                               dict(ts=strtime, value=kW, units="kW")),
+                               dict(ts=strtime, value=MW, units="MW")),
                            qos=1, retain=True)
 
         client.publish("{0}co2".format(mq.TOPIC_COMPUTED),

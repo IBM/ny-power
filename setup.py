@@ -41,6 +41,7 @@ setup(
         'console_scripts': [
             'ny-power-pump=nypower.cmd.pump:main',
             'ny-power-archive=nypower.cmd.archive:main',
+            'ny-power-backlog=nypower.cmd.backlog:main',
         ],
     },
     include_package_data=True,
