@@ -73,10 +73,10 @@ def get_fuel_mix(daysago=0):
     # this folds up the data as a hash area keyed by timestamp for
     # easy sorting
     for row in reader:
-        ts = row[0]
-        fuel = row[2]
-        power = int(float(row[3]))
         try:
+            ts = row[0]
+            fuel = row[2]
+            power = int(float(row[3]))
             if ts not in data:
                 data[ts] = FuelMixReading(ts)
             data[ts].add_fuel(fuel, power)
