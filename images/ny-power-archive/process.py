@@ -33,11 +33,11 @@ def on_connect(client, userdata, flags, rc):
 def on_message(client, userdata, msg):
     data = json.loads(msg.payload.decode('utf-8'))
     influxclient = client.influx
-    if msg.topic == "ny-power/co2":
+    if msg.topic == "ny-power/computed/co2":
         co2_to_influx(influxclient, data)
         co2_archive_to_mqtt(client, influxclient)
-    if "ny-power/fuel-mix" in msg.topic:
-        fuel = msg.topic.split("/")[2]
+    if "ny-power/upstream/fuel-mix" in msg.topic:
+        fuel = msg.topic.split("/")[-1]
         fuel_to_influx(influxclient, fuel, data)
 
 def co2_archive_to_mqtt(client, influx):

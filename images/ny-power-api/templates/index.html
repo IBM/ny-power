@@ -19,7 +19,7 @@
     function onConnect() {
         // Once a connection has been made, make a subscription and send a message.
         console.log("onConnect");
-        client.subscribe("ny-power/co2");
+        client.subscribe("ny-power/computed/co2");
         client.subscribe("ny-power/archive/co2_24h");
     }
 
@@ -34,7 +34,7 @@
     // called when a message arrives
     function onMessageArrived(message) {
         console.log("onMessageArrived:"+message.destinationName + message.payloadString);
-        if (message.destinationName == "ny-power/co2") {
+        if (message.destinationName == "ny-power/computed/co2") {
             var data = JSON.parse(message.payloadString);
             $("#co2-per-kwh").html(Math.round(data.emissions * 1000));
             $("#co2-updated").html(data.ts);
