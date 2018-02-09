@@ -8,5 +8,4 @@ TOPIC_FUEL_UPDATED = "ny-power/status/fuel-mix/updated"
 
 
 def get_pass():
-    with open("/etc/secret-volume/password") as f:
-        return f.read()
+    return os.environ.get("MQTT_PUMP_PASS")
