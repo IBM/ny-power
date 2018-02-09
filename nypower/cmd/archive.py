@@ -20,14 +20,17 @@ MQTT_HOST = os.environ.get("MQTT_HOST")
 
 def on_connect(client, userdata, flags, rc):
     _LOGGER.info("Connected to mqtt bus")
-    client.subscribe("ny-power/#")
+    client.subscribe("ny-power/computed/#")
+    client.subscribe("ny-power/upstream/#")
 
 
 # NOTE(sdague): there is a bootstrapping problem here
 def on_message(client, userdata, msg):
     influx = client.influx
+    data = json.loads(msg.payload.decode('utf-8'))
     if msg.topic == "ny-power/computed/co2":
-        influx.save_computed(msg.topic, msg.payload)
+        (root, computed, field) = msg.topic.split("/")
+        influx.save_computed(field, data["ts"], data["units"], data["value"])
         # and archive
         since = "24h"
         series = influx.get_timeseries("co2_computed", since)
@@ -35,7 +38,9 @@ def on_message(client, userdata, msg):
                        json.dumps(series),
                        qos=2, retain=True)
     if "ny-power/upstream/fuel-mix" in msg.topic:
-        influx.save_upstream(msg.topic, msg.payload)
+        (root, computed, field, kind) = msg.topic.split("/")
+        influx.save_upstream(
+            field, kind, data["ts"], data["units"], data["value"])
 
 
 def mqtt_client(influxclient):

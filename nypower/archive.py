@@ -1,4 +1,3 @@
-import json
 import os
 
 from influxdb import InfluxDBClient
@@ -16,37 +15,32 @@ class Archiver(object):
         if INFLUX_DB not in dbs:
             self.client.create_database(INFLUX_DB)
 
-    def save_computed(self, topic, payload):
-        (root, computed, field) = topic.split("/")
-        data = json.loads(payload.decode('utf-8'))
-
+    def save_computed(self, field, ts, units, value):
         pkt = [
             {
-                "measurement": "%s_%s" % (field, computed),
-                "time": data["ts"],
+                "measurement": "%s_computed" % field,
+                "time": ts,
                 "tags": {
-                    "units": data["units"]
+                    "units": units,
                 },
                 "fields": {
-                    "value": data["value"]
+                    "value": value,
                 }
             }
         ]
         self.client.write_points(pkt)
 
-    def save_upstream(self, topic, payload):
-        (root, computed, field, kind) = topic.split("/")
-        data = json.loads(payload.decode('utf-8'))
+    def save_upstream(self, field, kind, ts, units, value):
         pkt = [
             {
                 "measurement": field,
                 "tags": {
                     "type": kind,
-                    "units": data["units"]
+                    "units": units,
                 },
-                "time": data["ts"],
+                "time": ts,
                 "fields": {
-                    "value": data["value"]
+                    "value": value
                 }
             }
         ]
