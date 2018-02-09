@@ -8,6 +8,7 @@ import datetime
 import io
 import urllib.request
 
+from nypower.calc import co2_for_fuel
 
 FUEL_MIX = "http://mis.nyiso.com/public/csv/rtfuelmix/{0}rtfuelmix.csv"
 
@@ -22,11 +23,40 @@ def tzoffset():
     return datetime.timedelta(hours=5)
 
 
+class FuelMixReading(object):
+
+    def __init__(self, time):
+        self.time = time
+        self.fuels = dict()
+
+    def add_fuel(self, fuel, power):
+        self.fuels[fuel] = power
+
+    @property
+    def epoch(self):
+        return timestamp2epoch(self.time)
+
+    @property
+    def total_kW(self):
+        return sum(self.fuels.values())
+
+    @property
+    def total_co2(self):
+        co2 = 0
+        for fuel, power in self.fuels.items():
+            co2 += (co2_for_fuel(fuel) * power)
+        return co2
+
+    @property
+    def co2_g_per_kW(self):
+        return self.total_co2 * 1000 / self.total_kW
+
+
 def get_fuel_mix(daysago=0):
     # TODO(sdague): the containers run in UTC, the data thinks about
     # thing in NY time.
     now = datetime.datetime.now() - \
-          datetime.timedelta(days=daysago) - tzoffset()
+        datetime.timedelta(days=daysago) - tzoffset()
     url = FUEL_MIX.format(now.strftime("%Y%m%d"))
 
     # unfortunately we can't quite connect urllib to csv
@@ -43,12 +73,14 @@ def get_fuel_mix(daysago=0):
     # this folds up the data as a hash area keyed by timestamp for
     # easy sorting
     for row in reader:
+        ts = row[0]
+        fuel = row[2]
+        power = int(float(row[3]))
         try:
-            timestamp = timestamp2epoch(row[0])
-            if timestamp in data:
-                data[timestamp].append(row)
-            else:
-                data[timestamp] = [row]
+            if ts not in data:
+                data[ts] = FuelMixReading(ts)
+            data[ts].add_fuel(fuel, power)
+
         except ValueError:
             # skip a parse error on epoch, as it's table headers.
             pass

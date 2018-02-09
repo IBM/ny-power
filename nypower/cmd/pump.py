@@ -9,7 +9,6 @@ import time
 import click
 import paho.mqtt.client as mqtt
 
-from nypower.calc import co2_rollup
 from nypower.collector import timestamp2epoch, get_fuel_mix
 from nypower import mqtt as mq
 
@@ -48,26 +47,25 @@ def catchup_mqtt(client, data):
     global LAST
     now = LAST
 
-    for timestamp, rowset in data.items():
-        if timestamp <= now:
+    for timestamp, reading in data.items():
+        strtime = reading.time
+        if reading.epoch <= now:
             continue
 
-        for row in rowset:
-            strtime = row[0]
-            fuel_name = row[2]
-            kW = int(float(row[3]))
+        for fuel_name, kW in reading.fuels.items():
             topic = "{0}fuel-mix/{1}".format(mq.TOPIC_UPSTREAM, fuel_name)
             _LOGGER.info("%s => %s" % (topic, strtime))
+
             client.publish(topic,
                            json.dumps(
                                dict(ts=strtime, power=kW, units="kW")),
                            qos=1, retain=True)
 
-        co2_per_kW = co2_rollup(rowset)
         client.publish("{0}co2".format(mq.TOPIC_COMPUTED),
-                       json.dumps(dict(ts=strtime,
-                                       emissions=co2_per_kW,
-                                       units="kg / kWh")),
+                       json.dumps(
+                           dict(ts=strtime,
+                                emissions=reading.co2_g_per_kW / 1000,
+                                units="kg / kWh")),
                        qos=1, retain=True)
 
         client.publish(mq.TOPIC_FUEL_UPDATED,
