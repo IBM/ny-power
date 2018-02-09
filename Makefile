@@ -21,6 +21,9 @@ api:
 images/$(ARCHIVE_IMAGE)/nypower:
 	git clone https://github.com/sdague/nypower images/$(ARCHIVE_IMAGE)/nypower
 
+images/$(BACKLOG_IMAGE)/nypower:
+	git clone https://github.com/sdague/nypower images/$(BACKLOG_IMAGE)/nypower
+
 archive: images/$(ARCHIVE_IMAGE)/nypower
 	cd images/$(ARCHIVE_IMAGE)/nypower && git pull
 	bx cr build -t $(IMAGE_REG)$(ARCHIVE_IMAGE) images/$(ARCHIVE_IMAGE)
@@ -34,9 +37,11 @@ influxdb:
 	bx cr build -t $(IMAGE_REG)$(INFLUXDB_IMAGE) images/$(INFLUXDB_IMAGE)
 	kubectl apply -f deploy/ny-power-influxdb-deploy.yaml
 
-backlog:
+backlog: images/$(BACKLOG_IMAGE)/nypower
+	cd images/$(BACKLOG_IMAGE)/nypower && git pull
 	bx cr build -t $(IMAGE_REG)$(BACKLOG_IMAGE) images/$(BACKLOG_IMAGE)
-	kubectl apply -f deploy/ny-power-backlog-deploy.yaml
+	kubectl delete -f deploy/ny-power-backlog-job.yaml
+	kubectl create -f deploy/ny-power-backlog-job.yaml
 
 pump-delete:
 	kubectl delete -f deploy/ny-power-pump-deploy.yaml
