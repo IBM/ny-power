@@ -10,19 +10,19 @@ spec:
         app: mqtt
     spec:
       volumes:
-      - name: secret-volume
-        secret:
-          secretName: mqtt-pump-secret
       - name: mqtt-state-volume
         persistentVolumeClaim:
           claimName: mqtt-nfs
       containers:
       - name: ny-power-mqtt
         image: registry.ng.bluemix.net/sdague/ny-power-mqtt
+        env:
+          - name: MQTT_PUMP_PASS
+            valueFrom:
+              secretKeyRef:
+                name: mqtt-pump-secret
+                key: password
         volumeMounts:
-          - name: secret-volume
-            readOnly: true
-            mountPath: "/etc/secret-volume"
           - name: mqtt-state-volume
             mountPath: "/shared"
         imagePullPolicy: Always
