@@ -21,7 +21,7 @@ def main(args=None):
     influx = Archiver()
 
     for days in reversed(range(0, 7)):
-        data = get_fuel_mix(ago=days)
+        data = get_fuel_mix(daysago=days)
         for timestamp, reading in data.items():
             for fuel, power in reading.fuels.items():
                 influx.save_upstream(
