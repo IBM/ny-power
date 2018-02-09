@@ -74,7 +74,7 @@ def catchup_mqtt(client, data):
 
 @click.command()
 def main(args=None):
-    """Console script for nypower."""
+    """Pump data from NY ISO to ny-power."""
     global LAST
 
     client = mqtt_client()
@@ -93,10 +93,6 @@ def main(args=None):
 
         _LOGGER.info("Sleeping for the next cycle")
         time.sleep(60)
-
-    click.echo("Replace this message by putting your code into "
-               "nypower.cli.main")
-    click.echo("See click documentation at http://click.pocoo.org/")
 
 
 if __name__ == "__main__":

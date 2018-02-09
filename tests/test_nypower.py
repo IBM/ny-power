@@ -12,6 +12,7 @@ from nypower import mqtt
 from nypower import calc
 from nypower import collector
 from nypower.cmd import pump
+from nypower.cmd import archive
 
 
 @pytest.fixture
@@ -34,5 +35,9 @@ def test_command_line_interface():
     """Test the CLI."""
     runner = CliRunner()
     help_result = runner.invoke(pump.main, ['--help'])
+    assert help_result.exit_code == 0
+    assert '--help  Show this message and exit.' in help_result.output
+
+    help_result = runner.invoke(archive.main, ['--help'])
     assert help_result.exit_code == 0
     assert '--help  Show this message and exit.' in help_result.output
