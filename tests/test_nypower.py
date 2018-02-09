@@ -8,7 +8,10 @@ import pytest
 from click.testing import CliRunner
 
 from nypower import nypower
-from nypower import cli
+from nypower import mqtt
+from nypower import calc
+from nypower import collector
+from nypower.cmd import pump
 
 
 @pytest.fixture
@@ -30,9 +33,6 @@ def test_content(response):
 def test_command_line_interface():
     """Test the CLI."""
     runner = CliRunner()
-    result = runner.invoke(cli.main)
-    assert result.exit_code == 0
-    assert 'nypower.cli.main' in result.output
-    help_result = runner.invoke(cli.main, ['--help'])
+    help_result = runner.invoke(pump.main, ['--help'])
     assert help_result.exit_code == 0
     assert '--help  Show this message and exit.' in help_result.output
