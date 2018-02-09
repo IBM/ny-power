@@ -20,3 +20,8 @@ spec:
             value: ny-power-influxdb
           - name: MQTT_HOST
             value: mqtt.ny-power.org
+          - name: MQTT_PUMP_PASS
+            valueFrom:
+              secretKeyRef:
+                name: mqtt-pump-secret
+                key: password

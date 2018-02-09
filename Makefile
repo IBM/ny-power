@@ -18,7 +18,11 @@ api:
 	kubectl delete -f deploy/ny-power-api-deploy.yaml || /bin/true
 	kubectl apply -f deploy/ny-power-api-deploy.yaml
 
-archive:
+images/$(ARCHIVE_IMAGE)/nypower:
+	git clone https://github.com/sdague/nypower images/$(ARCHIVE_IMAGE)/nypower
+
+archive: images/$(ARCHIVE_IMAGE)/nypower
+	cd images/$(ARCHIVE_IMAGE)/nypower && git pull
 	bx cr build -t $(IMAGE_REG)$(ARCHIVE_IMAGE) images/$(ARCHIVE_IMAGE)
 	kubectl delete -f deploy/ny-power-archive-deploy.yaml || /bin/true
 	kubectl apply -f deploy/ny-power-archive-deploy.yaml

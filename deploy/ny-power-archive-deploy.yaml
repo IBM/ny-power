@@ -4,26 +4,23 @@ metadata:
   name: ny-power-archive
 spec:
   # we have multiple replicas to avoid missing anything
-  replicas: 2
+  replicas: 1
   template:
     metadata:
       labels:
         app: archive
     spec:
-      volumes:
-      - name: secret-volume
-        secret:
-          secretName: mqtt-pump-secret
       containers:
       - name: ny-power-archive
         image: registry.ng.bluemix.net/sdague/ny-power-archive
         imagePullPolicy: Always
-        volumeMounts:
-          - name: secret-volume
-            readOnly: true
-            mountPath: "/etc/secret-volume"
         env:
         - name: MQTT_HOST
           value: ny-power-mqtt
         - name: INFLUXDB_HOST
           value: ny-power-influxdb
+        - name: MQTT_PUMP_PASS
+          valueFrom:
+            secretKeyRef:
+              name: mqtt-pump-secret
+              key: password

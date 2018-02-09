@@ -8,6 +8,7 @@ RUN apt-get update && apt-get install -y python3 python3-pip
 
 RUN pip3 install -U flask
 RUN pip3 install -U influxdb
+RUN pip3 install -U paho-mqtt
 
 COPY app.py /root/app.py
 COPY templates/ /root/templates/

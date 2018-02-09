@@ -20,7 +20,9 @@
         // Once a connection has been made, make a subscription and send a message.
         console.log("onConnect");
         client.subscribe("ny-power/computed/co2");
-        client.subscribe("ny-power/archive/co2_24h");
+        client.subscribe("ny-power/archive/co2/24h");
+        // this is used to single activities to the webapp
+        client.subscribe("ny-power/application/webui");
     }
 
     // called when the client loses its connection
@@ -36,23 +38,30 @@
         console.log("onMessageArrived:"+message.destinationName + message.payloadString);
         if (message.destinationName == "ny-power/computed/co2") {
             var data = JSON.parse(message.payloadString);
-            $("#co2-per-kwh").html(Math.round(data.emissions * 1000));
+            $("#co2-per-kwh").html(Math.round(data.value));
+            $("#co2-units").html(data.units);
             $("#co2-updated").html(data.ts);
         }
-        if (message.destinationName == "ny-power/archive/co2_24h") {
+        if (message.destinationName == "ny-power/archive/co2/24h") {
             var data = JSON.parse(message.payloadString);
-            $("#sparkline").sparkline(data.data, {
+            $("#sparkline").sparkline(data.values, {
                 minSpotColor: '#04d604',
                 maxSpotColor: '#6b3300',
                 spotRadius: 3
             });
+        }
+        if (message.destinationName == "ny-power/application/webui") {
+            if (message.payloadString == "reload") {
+                location.reload();
+            }
         }
     }
   </script>
   </head>
   <body>
     <h1>The current NY ISO Grid CO2 / kWh</h1>
-    <h2>Current <span id="co2-per-kwh"></span> g / kWh <span id="sparkline"></span></h2>
+    <h2>Current <span id="co2-per-kwh"></span> <span id="co2-units"></span>
+      <span id="sparkline"></span></h2>
 
     <div><i>(last
       updated: <span id="co2-updated"></span>)</i>
