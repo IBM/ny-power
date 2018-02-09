@@ -58,14 +58,14 @@ def catchup_mqtt(client, data):
 
             client.publish(topic,
                            json.dumps(
-                               dict(ts=strtime, power=kW, units="kW")),
+                               dict(ts=strtime, value=kW, units="kW")),
                            qos=1, retain=True)
 
         client.publish("{0}co2".format(mq.TOPIC_COMPUTED),
                        json.dumps(
                            dict(ts=strtime,
-                                emissions=reading.co2_g_per_kW / 1000,
-                                units="kg / kWh")),
+                                value=reading.co2_g_per_kW,
+                                units="g / kWh")),
                        qos=1, retain=True)
 
         client.publish(mq.TOPIC_FUEL_UPDATED,
