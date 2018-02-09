@@ -8,6 +8,7 @@ IMAGE_REG=registry.ng.bluemix.net/sdague/
 
 all: mqtt pump
 
+
 mqtt:
 	bx cr build -t $(IMAGE_REG)$(MQTT_IMAGE) images/$(MQTT_IMAGE)
 	kubectl apply -f deploy/ny-power-mqtt-deploy.yaml
@@ -36,8 +37,13 @@ backlog:
 pump-delete:
 	kubectl delete -f deploy/ny-power-pump-deploy.yaml
 
-pump:
+images/$(PUMP_IMAGE)/nypower:
+	git clone https://github.com/sdague/nypower images/$(PUMP_IMAGE)/nypower
+
+pump: images/$(PUMP_IMAGE)/nypower
+	cd images/$(PUMP_IMAGE)/nypower && git pull
 	bx cr build -t $(IMAGE_REG)$(PUMP_IMAGE) images/$(PUMP_IMAGE)
+	kubectl delete -f deploy/ny-power-pump-deploy.yaml
 	kubectl apply -f deploy/ny-power-pump-deploy.yaml
 
 mqtt-service: mqtt

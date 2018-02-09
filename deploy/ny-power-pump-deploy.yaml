@@ -9,18 +9,15 @@ spec:
       labels:
         app: pump
     spec:
-      volumes:
-      - name: secret-volume
-        secret:
-          secretName: mqtt-pump-secret
       containers:
       - name: ny-power-pump
         image: registry.ng.bluemix.net/sdague/ny-power-pump
         imagePullPolicy: Always
-        volumeMounts:
-          - name: secret-volume
-            readOnly: true
-            mountPath: "/etc/secret-volume"
         env:
         - name: MQTT_HOST
           value: ny-power-mqtt
+        - name: MQTT_PUMP_PASS
+          valueFrom:
+            secretKeyRef:
+              name: mqtt-pump-secret
+              key: password
