@@ -3,12 +3,13 @@ kind: Deployment
 metadata:
   name: ny-power-api
 spec:
-  replicas: 3
+  replicas: 1
   template:
     metadata:
       labels:
         app: api
     spec:
+      revisionHistoryLimit: 2
       containers:
       - name: ny-power-api
         image: registry.ng.bluemix.net/sdague/ny-power-api:20180218-10
