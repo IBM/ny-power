@@ -13,7 +13,8 @@
     client.onMessageArrived = onMessageArrived;
 
     // connect the client
-    client.connect({onSuccess:onConnect});
+    client.reconnect = true;
+    client.connect({onSuccess: onConnect});
 
     // called when the client connects
     function onConnect() {
@@ -30,7 +31,6 @@
         if (responseObject.errorCode !== 0) {
             console.log("onConnectionLost:"+responseObject.errorMessage);
         }
-        client.connect({onSuccess:onConnect});
     }
 
     // called when a message arrives
