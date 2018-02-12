@@ -1,7 +1,7 @@
 import logging
 import os
 
-from flask import Flask, jsonify, render_template
+from flask import Flask, jsonify, render_template, url_for
 from influxdb import InfluxDBClient
 import paho.mqtt.publish as publish
 
@@ -26,7 +26,7 @@ _LOGGER.info("Should have been sent")
 
 @app.route("/")
 def index():
-    return render_template("index.html", mqtt_host=MQTT_HOST)
+    return render_template("index.html")
 
 @app.route("/current/co2")
 def current_co2():

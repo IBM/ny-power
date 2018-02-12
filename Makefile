@@ -2,10 +2,12 @@ MQTT_IMAGE=ny-power-mqtt
 API_IMAGE=ny-power-api
 ARCHIVE_IMAGE=ny-power-archive
 PUMP_IMAGE=ny-power-pump
+STATIC_IMAGE=ny-power-static
 INFLUXDB_IMAGE=ny-power-influxdb
 BACKLOG_IMAGE=ny-power-backlog
 IMAGE_REG=registry.ng.bluemix.net/sdague/
 BASE_IMAGE=ny-power-base
+API_TAG=20180218-10
 
 all: mqtt pump
 
@@ -14,9 +16,10 @@ mqtt:
 	bx cr build -t $(IMAGE_REG)$(MQTT_IMAGE) images/$(MQTT_IMAGE)
 	kubectl apply -f deploy/ny-power-mqtt-deploy.yaml
 
+api-image:
+	bx cr build -t $(IMAGE_REG)$(API_IMAGE):$(API_TAG) images/$(API_IMAGE)
+
 api:
-	bx cr build -t $(IMAGE_REG)$(API_IMAGE) images/$(API_IMAGE)
-	kubectl delete -f deploy/ny-power-api-deploy.yaml || /bin/true
 	kubectl apply -f deploy/ny-power-api-deploy.yaml
 
 
@@ -51,6 +54,11 @@ pump:
 	bx cr build -t $(IMAGE_REG)$(PUMP_IMAGE) images/$(PUMP_IMAGE)
 	kubectl delete -f deploy/ny-power-pump-deploy.yaml
 	kubectl apply -f deploy/ny-power-pump-deploy.yaml
+
+static:
+	bx cr build -t $(IMAGE_REG)$(STATIC_IMAGE) images/$(STATIC_IMAGE)
+	kubectl delete -f deploy/ny-power-static-deploy.yaml
+	kubectl apply -f deploy/ny-power-static-deploy.yaml
 
 mqtt-service: mqtt
 	kubectl apply -f deploy/ny-power-svc.yaml

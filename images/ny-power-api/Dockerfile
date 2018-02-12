@@ -1,6 +1,9 @@
 FROM ubuntu:xenial
 
 ENV DEBIAN_FRONTEND noninteractive
+ENV LANG C.UTF-8
+ENV LC_ALL C.UTF-8
+ENV FLASK_APP /root/app.py
 
 USER root
 
@@ -12,7 +15,8 @@ RUN pip3 install -U paho-mqtt
 
 COPY app.py /root/app.py
 COPY templates/ /root/templates/
+COPY static/ /root/static/
 
 EXPOSE 5000
 
-CMD LANG=C.UTF-8 LC_ALL=C.UTF-8 FLASK_APP=/root/app.py flask run --host=0.0.0.0
+CMD flask run --host=0.0.0.0
