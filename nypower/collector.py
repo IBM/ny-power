@@ -30,6 +30,7 @@ class FuelMixReading(object):
         self.fuels = dict()
 
     def add_fuel(self, fuel, power):
+        """ fuel is by name, power is current MW """
         self.fuels[fuel] = power
 
     @property
@@ -37,19 +38,25 @@ class FuelMixReading(object):
         return timestamp2epoch(self.time)
 
     @property
-    def total_kW(self):
+    def total_MW(self):
         return sum(self.fuels.values())
 
     @property
     def total_co2(self):
         co2 = 0
         for fuel, power in self.fuels.items():
+            # co2_for_fuel is metrictons / MWh * MW
+            # co2 is metric tons / hr
             co2 += (co2_for_fuel(fuel) * power)
         return co2
 
     @property
     def co2_g_per_kW(self):
-        return self.total_co2 * 1000 / self.total_kW
+        # total_co2 is metric tons / hr
+        # power is / MW
+        # results is metric tons / MHh, or kg / kWh
+        # we multiply by 1000 to get to g / kWh
+        return self.total_co2 * 1000 / self.total_MW
 
 
 def get_fuel_mix(daysago=0):
