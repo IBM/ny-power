@@ -28,6 +28,10 @@ _LOGGER.info("Should have been sent")
 def index():
     return render_template("index.html")
 
+@app.route("/mqtt")
+def mqtt():
+    return render_template("mqtt.html")
+
 @app.route("/current/co2")
 def current_co2():
     client = InfluxDBClient(HOST, 8086, 'root', 'root', 'fuel-mix')

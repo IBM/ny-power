@@ -36,3 +36,10 @@ body > .container {
 code {
   font-size: 80%;
 }
+
+pre.msglog {
+    max-height: 600px;
+    background-color: black;
+    color: whitesmoke;
+    padding: 1em;
+}

@@ -21,10 +21,10 @@
       <div class="collapse navbar-collapse" id="navbarsExampleDefault">
         <ul class="navbar-nav mr-auto">
           <li class="nav-item active">
-            <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+            <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="mqtt">MQTT Console</a>
+            <a class="nav-link" href="#">MQTT Console</a>
           </li>
         </ul>
       </div>
@@ -32,52 +32,11 @@
 
     <main role="main" class="container">
 
-      <div id="co2_current">
-        <h1>The current NY ISO Grid CO2 / kWh</h1>
-        <h2>Current <span id="co2-per-kwh"></span> g / kWh</h2>
+      <div id="title">
+        <h1>MQTT Messages</h1>
       </div>
-
-      <div id="co2_graph"></div>
-
-      <div id="current_fuel"></div>
-
-      <div>
-        <h3>About this site</h3>
-        <p>
-          The ny-power.org site is a demonstration using kubernetes
-          and mqtt to provide real time events from the NY Independent
-          System Operator data. It answers the question "what is the
-          current co2 emissions for an additional kWh of power right
-          now" by combining real time info and 2016 data on CO2 / MWh
-          / fuel type burned in NY State.
-        </p>
-        <p>
-          The NY ISO provides near real time information about the
-          state of the grid
-          (<a href="http://www.nyiso.com/public/markets_operations/market_data/graphs/index.jsp">example</a>). The
-          raw data for this is posted as a series of CSV files for
-          public consumption
-          at <a href="http://mis.nyiso.com/public/">http://mis.nyiso.com/public/</a>. These
-          contain 5 minute resolution data, and are updated every 5 to
-          20 minutes. The only way to process these are to poll
-          frequently.
-        </p>
-        <p>
-          The ny-power app makes it possible to access an event stream
-          of this feed through a series of microservices.
-          <ul>
-            <li>ny-power-pump: a polling service that polls for CSV
-              files, and publishes these to an mqtt server</li>
-            <li>ny-power-mqtt: an mqtt server available
-              at <b>mqtt.ny-power.org</b></li>
-            <li>ny-power-archive: tooling that follows the mqtt server
-            and writes to an influx db for time series
-              calculations</li>
-            <li>ny-power-api: provides example front end website which
-            has no active polling, and updates exclusively through
-              responding to data on the mqtt bus.</li>
-          </ul>
-        </p>
+      <div class="content">
+        <pre class="msglog" id="msglog"></pre>
       </div>
 
     </main><!-- /.container -->
@@ -101,7 +60,7 @@
             type="text/javascript"></script>
     <!-- Latest compiled and minified plotly.js JavaScript -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
-    <script src="static/js/mqtt.js"></script>
+    <script src="static/js/mqtt-console.js"></script>
 
   </body>
 </html>
