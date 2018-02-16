@@ -12,7 +12,7 @@ spec:
       revisionHistoryLimit: 2
       containers:
       - name: ny-power-api
-        image: registry.ng.bluemix.net/sdague/ny-power-api:20180214-5
+        image: registry.ng.bluemix.net/sdague/ny-power-api:20180215-3
         imagePullPolicy: Always
         ports:
         - containerPort: 80

@@ -5,6 +5,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114225000-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-114225000-1');
+    </script>
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
@@ -33,8 +43,8 @@
     <main role="main" class="container">
 
       <div id="co2_current">
-        <h1>The current NY ISO Grid CO2 / kWh</h1>
-        <h2>Current <span id="co2-per-kwh"></span> g / kWh</h2>
+        <h1>NY ISO Grid CO2 Intensity</h1>
+        <h2><span id="co2-per-kwh"></span> <span id="co2-units"></span></h2>
       </div>
 
       <div id="co2_graph"></div>
@@ -78,13 +88,29 @@
               responding to data on the mqtt bus.</li>
           </ul>
         </p>
+        <h3>How CO2 intensity is calculated</h3>
+        <p>
+          A set of simplifying assumptions are made to approximate CO2
+          generation per kWh. These are documented in
+          the <a href="https://github.com/sdague/nypower/blob/master/nypower/calc.py">github
+          source</a>. Like any model or simplification, these are
+          approximations made based on the information at hand. These
+          numbers should be used as educational information only, and
+          not be considered definitive.
+        </p>
       </div>
 
     </main><!-- /.container -->
 
-    <footer class="footer">
+    <footer class="footer fixed-bottom">
       <div class="container">
-        Last Updated <span id="co2-updated" class="text-muted">Place sticky footer content here.</span>
+        <p>
+          Powered by <a href="https://console.bluemix.net/dashboard/apps"><img height="14px"
+          src="static/images/ibm-cloud-logo-white.svg"/> IBM <strong>Cloud</strong></a>
+        </p>
+        <p>
+          Last Updated <span id="co2-updated" class="text-muted">Place sticky footer content here.</span>
+        </p>
       </div>
     </footer>
   <body>

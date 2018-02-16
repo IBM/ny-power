@@ -7,7 +7,7 @@ INFLUXDB_IMAGE=ny-power-influxdb
 BACKLOG_IMAGE=ny-power-backlog
 IMAGE_REG=registry.ng.bluemix.net/sdague/
 BASE_IMAGE=ny-power-base
-API_TAG=20180214-5
+API_TAG=20180215-3
 
 all: mqtt pump
 

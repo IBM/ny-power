@@ -5,6 +5,16 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114225000-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'UA-114225000-1');
+    </script>
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
@@ -39,11 +49,20 @@
         <pre class="msglog" id="msglog"></pre>
       </div>
 
+      <div class="content">
+        You can connect to the mqtt stream yourself with the following
+        command:<p>
+          <pre>    mosquito_sub -h mqtt.ny-power.org -t ny-power/# -v</pre>
+      </div>
+
     </main><!-- /.container -->
 
-    <footer class="footer">
+    <footer class="footer fixed-bottom">
       <div class="container">
-        Last Updated <span id="co2-updated" class="text-muted">Place sticky footer content here.</span>
+        <p>
+          Powered by <a href="https://console.bluemix.net/dashboard/apps"><img height="14px"
+          src="static/images/ibm-cloud-logo-white.svg"/> IBM <strong>Cloud</strong></a>
+        </p>
       </div>
     </footer>
   <body>
