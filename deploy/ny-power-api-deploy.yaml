@@ -15,6 +15,7 @@ spec:
         image: registry.ng.bluemix.net/sdague/ny-power-api:20180215-3
         imagePullPolicy: Always
         ports:
+        - name: http
         - containerPort: 80
         env:
           - name: INFLUXDB_HOST
