@@ -8,12 +8,13 @@ BACKLOG_IMAGE=ny-power-backlog
 IMAGE_REG=registry.ng.bluemix.net/sdague/
 BASE_IMAGE=ny-power-base
 API_TAG=20180215-3
+MQTT_TAG=20180301-2
 
 all: mqtt pump
 
 
 mqtt:
-	bx cr build -t $(IMAGE_REG)$(MQTT_IMAGE) images/$(MQTT_IMAGE)
+	bx cr build -t $(IMAGE_REG)$(MQTT_IMAGE):$(MQTT_TAG) images/$(MQTT_IMAGE)
 	kubectl apply -f deploy/ny-power-mqtt-deploy.yaml
 
 api-image:

@@ -4,7 +4,9 @@ ENV DEBIAN_FRONTEND noninteractive
 
 USER root
 
-RUN apt-get update && apt-get install -y mosquitto
+RUN apt-get update && apt-get dist-upgrade -y
+
+RUN apt-get install -y mosquitto
 
 COPY mqtt_acl.conf /etc/mqtt_acl.conf
 
