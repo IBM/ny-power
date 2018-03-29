@@ -8,7 +8,7 @@ BACKLOG_IMAGE=ny-power-backlog
 IMAGE_REG=registry.ng.bluemix.net/sdague/
 BASE_IMAGE=ny-power-base
 API_TAG=20180215-3
-MQTT_TAG=20180301-2
+MQTT_TAG=20180328-1
 
 all: mqtt pump
 

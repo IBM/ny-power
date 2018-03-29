@@ -15,7 +15,7 @@ spec:
           claimName: mqtt-nfs
       containers:
       - name: ny-power-mqtt
-        image: registry.ng.bluemix.net/sdague/ny-power-mqtt:20180301-2
+        image: registry.ng.bluemix.net/sdague/ny-power-mqtt:20180328-1
         env:
           - name: MQTT_PUMP_PASS
             valueFrom:
