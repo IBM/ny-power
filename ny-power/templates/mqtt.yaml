@@ -1,0 +1,59 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "ny-power.fullname" . }}-nfs
+  annotations:
+    volume.beta.kubernetes.io/storage-class: {{ .Values.mqtt.storage.class }}
+  labels:
+    app: {{ template "ny-power.name" . }}
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.mqtt.storage.size }}
+---
+apiVersion: apps/v1beta2
+kind: Deployment
+metadata:
+  name: {{ template "ny-power.fullname" . }}
+  labels:
+    app: {{ template "ny-power.name" . }}
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "ny-power.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "ny-power.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      volumes:
+        - name: {{ template "ny-power.fullname" . }}-volume
+          persistentVolumeClaim:
+            claimName: {{ template "ny-power.fullname" . }}-nfs
+      containers:
+        - name: {{ .Chart.Name }}-mqtt
+          image: "{{ .Values.image.repository }}/{{.Values.mqtt.image.name }}:{{.Values.mqtt.image.version }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MQTT_PUMP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: mqtt-pump-secret
+                  key: password
+          volumeMounts:
+            - name: {{ template "ny-power.fullname" . }}-volume
+              mountPath: "/shared"
+          ports:
+            - containerPort: 80
+            - containerPort: 1883
