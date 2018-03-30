@@ -1,4 +1,12 @@
 apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ template "ny-power.fullname" . }}-pump
+type: Opaque
+data:
+  password: {{ .Files.Get "secrets/mqtt-password" | b64enc }}
+---
+apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: {{ template "ny-power.fullname" . }}-nfs
@@ -19,7 +27,7 @@ spec:
 apiVersion: apps/v1beta2
 kind: Deployment
 metadata:
-  name: {{ template "ny-power.fullname" . }}
+  name: {{ template "ny-power.fullname" . }}-mqtt
   labels:
     app: {{ template "ny-power.name" . }}
     chart: {{ template "ny-power.chart" . }}
@@ -49,7 +57,7 @@ spec:
             - name: MQTT_PUMP_PASS
               valueFrom:
                 secretKeyRef:
-                  name: mqtt-pump-secret
+                  name: {{ template "ny-power.fullname" . }}-pump
                   key: password
           volumeMounts:
             - name: {{ template "ny-power.fullname" . }}-volume
