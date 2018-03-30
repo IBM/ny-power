@@ -1,0 +1,69 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "ny-power.fullname" . }}-archive
+  labels:
+    app: {{ template "ny-power.name" . }}
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "ny-power.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "ny-power.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-archive
+          image: "{{ .Values.image.repository }}/{{.Values.archive.image.name }}:{{.Values.archive.image.version }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: MQTT_HOST
+            value: {{ template "ny-power.fullname" . }}-mqtt
+          - name: INFLUXDB_HOST
+            value: {{ template "ny-power.fullname" . }}-influxdb
+          - name: MQTT_PUMP_PASS
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "ny-power.fullname" . }}-pump
+                key: password
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "ny-power.fullname" . }}-pump
+  labels:
+    app: {{ template "ny-power.name" . }}
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "ny-power.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "ny-power.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: {{ .Chart.Name }}-pump
+          image: "{{ .Values.image.repository }}/{{.Values.pump.image.name }}:{{.Values.pump.image.version }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+          - name: MQTT_HOST
+            value: {{ template "ny-power.fullname" . }}-mqtt
+          - name: MQTT_PUMP_PASS
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "ny-power.fullname" . }}-pump
+                key: password

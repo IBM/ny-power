@@ -9,13 +9,34 @@ IMAGE_REG=registry.ng.bluemix.net/sdague/
 BASE_IMAGE=ny-power-base
 API_TAG=20180215-3
 MQTT_TAG=20180328-1
+VERSION=1
 
 all: mqtt pump
 
+.PHONY: testme
 
-mqtt:
-	bx cr build -t $(IMAGE_REG)$(MQTT_IMAGE):$(MQTT_TAG) images/$(MQTT_IMAGE)
-	kubectl apply -f deploy/ny-power-mqtt-deploy.yaml
+testme:
+	VERSION=$(shell ./serial.sh ny-power/versions/test); \
+	echo $$VERSION
+
+test2: testme
+	echo $(VERSION)
+
+pump-image:
+	VERSION=$(shell ./serial.sh ny-power/versions/pump); \
+	bx cr build -t $(IMAGE_REG)$(PUMP_IMAGE):$$VERSION images/$(PUMP_IMAGE)
+
+archive-image:
+	VERSION=$(shell ./serial.sh ny-power/versions/archive); \
+	bx cr build -t $(IMAGE_REG)$(ARCHIVE_IMAGE):$$VERSION images/$(ARCHIVE_IMAGE)
+
+influx-image:
+	VERSION=$(shell ./serial.sh ny-power/versions/influx); \
+	bx cr build -t $(IMAGE_REG)$(INFLUXDB_IMAGE):$$VERSION images/$(INFLUXDB_IMAGE)
+
+mqtt-image:
+	VERSION=$(shell ./serial.sh ny-power/versions/mqtt); \
+	bx cr build -t $(IMAGE_REG)$(MQTT_IMAGE):$$VERSION images/$(MQTT_IMAGE)
 
 api-image:
 	bx cr build -t $(IMAGE_REG)$(API_IMAGE):$(API_TAG) images/$(API_IMAGE)

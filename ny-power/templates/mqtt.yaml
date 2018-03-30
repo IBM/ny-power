@@ -9,7 +9,7 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ template "ny-power.fullname" . }}-nfs
+  name: {{ template "ny-power.fullname" . }}-mqtt-nfs
   annotations:
     volume.beta.kubernetes.io/storage-class: {{ .Values.mqtt.storage.class }}
   labels:
@@ -24,7 +24,7 @@ spec:
     requests:
       storage: {{ .Values.mqtt.storage.size }}
 ---
-apiVersion: apps/v1beta2
+apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: {{ template "ny-power.fullname" . }}-mqtt
@@ -34,7 +34,7 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  replicas: {{ .Values.replicaCount }}
+  replicas: 1
   selector:
     matchLabels:
       app: {{ template "ny-power.name" . }}
@@ -46,9 +46,9 @@ spec:
         release: {{ .Release.Name }}
     spec:
       volumes:
-        - name: {{ template "ny-power.fullname" . }}-volume
+        - name: {{ template "ny-power.fullname" . }}-mqtt-volume
           persistentVolumeClaim:
-            claimName: {{ template "ny-power.fullname" . }}-nfs
+            claimName: {{ template "ny-power.fullname" . }}-mqtt-nfs
       containers:
         - name: {{ .Chart.Name }}-mqtt
           image: "{{ .Values.image.repository }}/{{.Values.mqtt.image.name }}:{{.Values.mqtt.image.version }}"
@@ -60,8 +60,31 @@ spec:
                   name: {{ template "ny-power.fullname" . }}-pump
                   key: password
           volumeMounts:
-            - name: {{ template "ny-power.fullname" . }}-volume
+            - name: {{ template "ny-power.fullname" . }}-mqtt-volume
               mountPath: "/shared"
           ports:
             - containerPort: 80
             - containerPort: 1883
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "ny-power.fullname" . }}-mqtt
+  labels:
+    app: {{ template "ny-power.name" . }}
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 1883
+    targetPort: 1883
+    name: {{ template "ny-power.fullname" . }}-mqtt
+    protocol: TCP
+  - port: 80
+    targetPort: 80
+    name: {{ template "ny-power.fullname" . }}-websocket
+    protocol: TCP
+  selector:
+    app: {{ template "ny-power.fullname" . }}-mqtt

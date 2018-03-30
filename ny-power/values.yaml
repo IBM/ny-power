@@ -12,6 +12,24 @@ mqtt:
     size: 1Gi
     class: "ibmc-file-silver"
 
+influx:
+  image:
+    name: ny-power-influxdb
+    version: 2
+  storage:
+    size: 20Gi
+    class: "ibmc-file-silver"
+
+archive:
+  image:
+    name: ny-power-archive
+    version: 2
+
+pump:
+  image:
+    name: ny-power-pump
+    version: 2
+
 image:
   repository: registry.ng.bluemix.net/sdague
   tag: stable

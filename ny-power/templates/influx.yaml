@@ -1,0 +1,70 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "ny-power.fullname" . }}-influx-nfs
+  annotations:
+    volume.beta.kubernetes.io/storage-class: {{ .Values.influx.storage.class }}
+  labels:
+    app: {{ template "ny-power.name" . }}
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.influx.storage.size }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "ny-power.fullname" . }}-influx
+  labels:
+    app: {{ template "ny-power.name" . }}
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "ny-power.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "ny-power.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      volumes:
+      - name: {{ template "ny-power.fullname" . }}-influx-volume
+        persistentVolumeClaim:
+          claimName: {{ template "ny-power.fullname" . }}-influx-nfs
+      containers:
+      - name: {{ .Chart.Name }}-influx
+        image: "{{ .Values.image.repository }}/{{.Values.influx.image.name }}:{{.Values.influx.image.version }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        volumeMounts:
+          - name: {{ template "ny-power.fullname" . }}-influx-volume
+            mountPath: "/var/lib/influxdb"
+        ports:
+        - containerPort: 8086
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "ny-power.fullname" . }}-influx
+  labels:
+    app: {{ template "ny-power.name" . }}
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  ports:
+  - port: 8086
+    targetPort: 8086
+    name: {{ template "ny-power.fullname" . }}-influx
+    protocol: TCP
+  selector:
+    app: {{ template "ny-power.fullname" . }}-influx
