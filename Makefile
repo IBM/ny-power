@@ -1,5 +1,6 @@
 MQTT_IMAGE=ny-power-mqtt
 API_IMAGE=ny-power-api
+WEB_IMAGE=ny-power-api
 ARCHIVE_IMAGE=ny-power-archive
 PUMP_IMAGE=ny-power-pump
 STATIC_IMAGE=ny-power-static
@@ -37,6 +38,11 @@ influx-image:
 mqtt-image:
 	VERSION=$(shell ./serial.sh ny-power/versions/mqtt); \
 	bx cr build -t $(IMAGE_REG)$(MQTT_IMAGE):$$VERSION images/$(MQTT_IMAGE)
+
+web-image:
+	VERSION=$(shell ./serial.sh ny-power/versions/web); \
+	bx cr build -t $(IMAGE_REG)$(WEB_IMAGE):$$VERSION images/$(WEB_IMAGE)
+
 
 api-image:
 	bx cr build -t $(IMAGE_REG)$(API_IMAGE):$(API_TAG) images/$(API_IMAGE)

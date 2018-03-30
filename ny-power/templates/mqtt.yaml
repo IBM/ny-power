@@ -50,7 +50,7 @@ spec:
           persistentVolumeClaim:
             claimName: {{ template "ny-power.fullname" . }}-mqtt-nfs
       containers:
-        - name: {{ .Chart.Name }}-mqtt
+        - name: {{ template "ny-power.fullname" . }}-mqtt
           image: "{{ .Values.image.repository }}/{{.Values.mqtt.image.name }}:{{.Values.mqtt.image.version }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:

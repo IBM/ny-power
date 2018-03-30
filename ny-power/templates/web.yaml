@@ -1,0 +1,57 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "ny-power.fullname" . }}-api
+  labels:
+    app: {{ template "ny-power.name" . }}
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ template "ny-power.name" . }}
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "ny-power.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      revisionHistoryLimit: 2
+      containers:
+      - name: {{ template "ny-power.fullname" . }}-api
+        image: "{{ .Values.image.repository }}/{{.Values.api.image.name }}:{{.Values.api.image.version }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        ports:
+        - containerPort: 80
+        env:
+          - name: INFLUXDB_HOST
+            value: {{ template "ny-power.fullname" . }}-mqtt
+          - name: MQTT_HOST
+            value: mqtt2.ny-power.org
+          - name: MQTT_PUMP_PASS
+            valueFrom:
+              secretKeyRef:
+                name: {{ template "ny-power.fullname" . }}-pump
+                key: password
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "ny-power.fullname" . }}-api
+  labels:
+    app: {{ template "ny-power.name" . }}
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+    targetPort: 5000
+    name: {{ template "ny-power.fullname" . }}-web
+    protocol: TCP
+  selector:
+    app: {{ template "ny-power.fullname" . }}-api

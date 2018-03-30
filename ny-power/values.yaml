@@ -30,6 +30,11 @@ pump:
     name: ny-power-pump
     version: 2
 
+api:
+  image:
+    name: ny-power-api
+    version: 2
+
 image:
   repository: registry.ng.bluemix.net/sdague
   tag: stable
