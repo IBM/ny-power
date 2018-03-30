@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ template "ny-power.fullname" . }}-api
   labels:
-    app: {{ template "ny-power.name" . }}
+    app: {{ template "ny-power.fullname" . }}-api
     chart: {{ template "ny-power.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -42,7 +42,7 @@ kind: Service
 metadata:
   name: {{ template "ny-power.fullname" . }}-api
   labels:
-    app: {{ template "ny-power.name" . }}
+    app: {{ template "ny-power.fullname" . }}-api
     chart: {{ template "ny-power.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
