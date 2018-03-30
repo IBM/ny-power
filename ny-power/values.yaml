@@ -20,14 +20,9 @@ influx:
     size: 20Gi
     class: "ibmc-file-silver"
 
-archive:
+base:
   image:
-    name: ny-power-archive
-    version: 2
-
-pump:
-  image:
-    name: ny-power-pump
+    name: ny-power-base
     version: 2
 
 api:

@@ -23,6 +23,10 @@ testme:
 test2: testme
 	echo $(VERSION)
 
+base-image: images/$(BASE_IMAGE)/nypower
+	VERSION=$(shell ./serial.sh ny-power/versions/base); \
+	bx cr build -t $(IMAGE_REG)$(BASE_IMAGE):$$VERSION images/$(BASE_IMAGE)
+
 pump-image:
 	VERSION=$(shell ./serial.sh ny-power/versions/pump); \
 	bx cr build -t $(IMAGE_REG)$(PUMP_IMAGE):$$VERSION images/$(PUMP_IMAGE)
@@ -66,9 +70,9 @@ influxdb:
 images/$(BASE_IMAGE)/nypower:
 	git clone https://github.com/sdague/nypower images/$(BASE_IMAGE)/nypower
 
-base-image: images/$(BASE_IMAGE)/nypower
-	cd images/$(BASE_IMAGE)/nypower && git pull
-	bx cr build -t $(IMAGE_REG)$(BASE_IMAGE) images/$(BASE_IMAGE)
+# base-image: images/$(BASE_IMAGE)/nypower
+# 	cd images/$(BASE_IMAGE)/nypower && git pull
+# 	bx cr build -t $(IMAGE_REG)$(BASE_IMAGE) images/$(BASE_IMAGE)
 
 backlog:
 	bx cr build -t $(IMAGE_REG)$(BACKLOG_IMAGE) images/$(BACKLOG_IMAGE)

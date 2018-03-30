@@ -9,7 +9,7 @@ data:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: {{ template "ny-power.fullname" . }}-mqtt-nfs
+  name: {{ template "ny-power.fullname" . }}-nfs
   annotations:
     volume.beta.kubernetes.io/storage-class: {{ .Values.mqtt.storage.class }}
   labels:
@@ -27,7 +27,7 @@ spec:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "ny-power.fullname" . }}-mqtt
+  name: {{ template "ny-power.fullname" . }}
   labels:
     app: {{ template "ny-power.name" . }}
     chart: {{ template "ny-power.chart" . }}
@@ -46,11 +46,11 @@ spec:
         release: {{ .Release.Name }}
     spec:
       volumes:
-        - name: {{ template "ny-power.fullname" . }}-mqtt-volume
+        - name: {{ template "ny-power.fullname" . }}-volume
           persistentVolumeClaim:
-            claimName: {{ template "ny-power.fullname" . }}-mqtt-nfs
+            claimName: {{ template "ny-power.fullname" . }}-nfs
       containers:
-        - name: {{ template "ny-power.fullname" . }}-mqtt
+        - name: {{ template "ny-power.fullname" . }}
           image: "{{ .Values.image.repository }}/{{.Values.mqtt.image.name }}:{{.Values.mqtt.image.version }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           env:
@@ -60,7 +60,7 @@ spec:
                   name: {{ template "ny-power.fullname" . }}-pump
                   key: password
           volumeMounts:
-            - name: {{ template "ny-power.fullname" . }}-mqtt-volume
+            - name: {{ template "ny-power.fullname" . }}-volume
               mountPath: "/shared"
           ports:
             - containerPort: 80
@@ -69,7 +69,7 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "ny-power.fullname" . }}-mqtt
+  name: {{ template "ny-power.fullname" . }}
   labels:
     app: {{ template "ny-power.name" . }}
     chart: {{ template "ny-power.chart" . }}
@@ -80,11 +80,40 @@ spec:
   ports:
   - port: 1883
     targetPort: 1883
-    name: {{ template "ny-power.fullname" . }}-mqtt
+    name: {{ template "ny-power.fullname" . }}
     protocol: TCP
   - port: 80
     targetPort: 80
     name: {{ template "ny-power.fullname" . }}-websocket
     protocol: TCP
   selector:
-    app: {{ template "ny-power.fullname" . }}-mqtt
+    app: {{ template "ny-power.fullname" . }}
+# ---
+# apiVersion: batch/v1
+# kind: Job
+# metadata:
+#   name: {{ template "ny-power.fullname" . }}-post
+#   labels:
+#     heritage: {{.Release.Service | quote }}
+#     release: {{.Release.Name | quote }}
+#     chart: {{ template "ny-power.chart" . }}
+#   annotations:
+#     # This is what defines this resource as a hook. Without this line, the
+#     # job is considered part of the release.
+#     "helm.sh/hook": post-install
+#     "helm.sh/hook-weight": "-5"
+#     "helm.sh/hook-delete-policy": hook-succeeded
+# spec:
+#   template:
+#     metadata:
+#       name: {{ template "ny-power.fullname" . }}-post
+#       labels:
+#         heritage: {{.Release.Service | quote }}
+#         release: {{.Release.Name | quote }}
+#         chart: "{{.Chart.Name}}-{{.Chart.Version}}"
+#     spec:
+#       restartPolicy: Never
+#       containers:
+#       - name: post-install-job
+#         image: "alpine:3.3"
+#         command: ["/bin/sleep","{{default "10" .Values.sleepyTime}}"]

@@ -21,8 +21,9 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-archive
-          image: "{{ .Values.image.repository }}/{{.Values.archive.image.name }}:{{.Values.archive.image.version }}"
+          image: "{{ .Values.image.repository }}/{{.Values.base.image.name }}:{{.Values.base.image.version }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/usr/local/bin/ny-power-archive"]
           env:
           - name: MQTT_HOST
             value: {{ template "ny-power.fullname" . }}-mqtt
@@ -31,7 +32,7 @@ spec:
           - name: MQTT_PUMP_PASS
             valueFrom:
               secretKeyRef:
-                name: {{ template "ny-power.fullname" . }}-pump
+                name: {{ template "ny-power.fullname" . }}-mqtt-pump
                 key: password
 ---
 apiVersion: apps/v1
@@ -57,13 +58,14 @@ spec:
     spec:
       containers:
         - name: {{ .Chart.Name }}-pump
-          image: "{{ .Values.image.repository }}/{{.Values.pump.image.name }}:{{.Values.pump.image.version }}"
+          image: "{{ .Values.image.repository }}/{{.Values.base.image.name }}:{{.Values.base.image.version }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
+          command: ["/usr/local/bin/ny-power-pump"]
           env:
           - name: MQTT_HOST
             value: {{ template "ny-power.fullname" . }}-mqtt
           - name: MQTT_PUMP_PASS
             valueFrom:
               secretKeyRef:
-                name: {{ template "ny-power.fullname" . }}-pump
+                name: {{ template "ny-power.fullname" . }}-mqtt-pump
                 key: password

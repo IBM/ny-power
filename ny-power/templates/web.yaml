@@ -34,7 +34,7 @@ spec:
           - name: MQTT_PUMP_PASS
             valueFrom:
               secretKeyRef:
-                name: {{ template "ny-power.fullname" . }}-pump
+                name: {{ template "ny-power.fullname" . }}-mqtt-pump
                 key: password
 ---
 apiVersion: v1
