@@ -29,7 +29,7 @@ kind: Deployment
 metadata:
   name: {{ template "ny-power.fullname" . }}
   labels:
-    app: {{ template "ny-power.fullname" . }}
+    app: {{ template "ny-power.name" . }}
     chart: {{ template "ny-power.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -71,7 +71,7 @@ kind: Service
 metadata:
   name: {{ template "ny-power.fullname" . }}
   labels:
-    app: {{ template "ny-power.fullname" . }}
+    app: {{ template "ny-power.name" . }}
     chart: {{ template "ny-power.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -80,14 +80,15 @@ spec:
   ports:
   - port: 1883
     targetPort: 1883
-    name: {{ template "ny-power.fullname" . }}
+    name: mqtt
     protocol: TCP
   - port: 80
     targetPort: 80
-    name: {{ template "ny-power.fullname" . }}-websocket
+    name: http
     protocol: TCP
   selector:
-    app: {{ template "ny-power.fullname" . }}
+    app: {{ template "ny-power.name" . }}
+    release: {{ .Release.Name }}
 # ---
 # apiVersion: batch/v1
 # kind: Job
