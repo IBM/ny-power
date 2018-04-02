@@ -28,12 +28,12 @@ base:
 ibmCloud:
   image:
     name: ny-power-ibm-cloud
-    version: 5
+    version: 6
 
 api:
   image:
     name: ny-power-api
-    version: 2
+    version: 4
 
 image:
   repository: registry.ng.bluemix.net/sdague
