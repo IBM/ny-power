@@ -68,3 +68,4 @@ spec:
     protocol: TCP
   selector:
     app: {{ template "ny-power.fullname" . }}-influx
+    chart: {{ template "ny-power.chart" . }}
