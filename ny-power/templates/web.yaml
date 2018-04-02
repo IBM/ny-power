@@ -28,7 +28,7 @@ spec:
         - containerPort: 80
         env:
           - name: INFLUXDB_HOST
-            value: {{ template "ny-power.fullname" . }}-mqtt
+            value: {{ template "ny-power.fullname" . }}-influx
           - name: MQTT_HOST
             value: mqtt2.ny-power.org
           - name: MQTT_PUMP_PASS

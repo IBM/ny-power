@@ -21,7 +21,7 @@ kind: Deployment
 metadata:
   name: {{ template "ny-power.fullname" . }}-influx
   labels:
-    app: {{ template "ny-power.name" . }}
+    app: {{ template "ny-power.name" . }}-influx
     chart: {{ template "ny-power.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -29,12 +29,12 @@ spec:
   replicas: 1
   selector:
     matchLabels:
-      app: {{ template "ny-power.name" . }}
+      app: {{ template "ny-power.name" . }}-influx
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "ny-power.name" . }}
+        app: {{ template "ny-power.name" . }}-influx
         release: {{ .Release.Name }}
     spec:
       volumes:
@@ -42,7 +42,7 @@ spec:
         persistentVolumeClaim:
           claimName: {{ template "ny-power.fullname" . }}-influx-nfs
       containers:
-      - name: {{ .Chart.Name }}-influx
+      - name: {{ template "ny-power.fullname" . }}-influx
         image: "{{ .Values.image.repository }}/{{.Values.influx.image.name }}:{{.Values.influx.image.version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         volumeMounts:
@@ -56,7 +56,7 @@ kind: Service
 metadata:
   name: {{ template "ny-power.fullname" . }}-influx
   labels:
-    app: {{ template "ny-power.name" . }}
+    app: {{ template "ny-power.name" . }}-influx
     chart: {{ template "ny-power.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -64,8 +64,8 @@ spec:
   ports:
   - port: 8086
     targetPort: 8086
-    name: {{ template "ny-power.fullname" . }}-influx
+    name: {{ template "ny-power.name" . }}-influx
     protocol: TCP
   selector:
-    app: {{ template "ny-power.fullname" . }}-influx
-    chart: {{ template "ny-power.chart" . }}
+    app: {{ template "ny-power.name" . }}-influx
+    release: {{ .Release.Name }}

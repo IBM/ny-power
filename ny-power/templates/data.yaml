@@ -28,7 +28,7 @@ spec:
           - name: MQTT_HOST
             value: {{ template "ny-power.fullname" . }}-mqtt
           - name: INFLUXDB_HOST
-            value: {{ template "ny-power.fullname" . }}-influxdb
+            value: {{ template "ny-power.fullname" . }}-influx
           - name: MQTT_PUMP_PASS
             valueFrom:
               secretKeyRef:
