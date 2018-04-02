@@ -23,6 +23,10 @@ testme:
 test2: testme
 	echo $(VERSION)
 
+ibm-cloud-image:
+	VERSION=$(shell ./serial.sh ny-power/versions/ibm-cloud); \
+	bx cr build -t $(IMAGE_REG)ny-power-ibm-cloud:$$VERSION images/ny-power-ibm-cloud
+
 base-image: images/$(BASE_IMAGE)/nypower
 	VERSION=$(shell ./serial.sh ny-power/versions/base); \
 	bx cr build -t $(IMAGE_REG)$(BASE_IMAGE):$$VERSION images/$(BASE_IMAGE)

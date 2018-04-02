@@ -1,3 +1,27 @@
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: default
+  name: {{ template "ny-power.fullname" . }}-services-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["services"]
+  verbs: ["get"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "ny-power.fullname" . }}-read-services
+  namespace: default
+subjects:
+- kind: Group
+  name: system:serviceaccounts
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: {{ template "ny-power.fullname" . }}-services-reader
+  apiGroup: rbac.authorization.k8s.io
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -20,6 +44,11 @@ spec:
         release: {{ .Release.Name }}
     spec:
       revisionHistoryLimit: 2
+      initContainers:
+      - name: {{ template "ny-power.fullname" . }}-api
+        image: "{{ .Values.image.repository }}/{{.Values.ibmCloud.image.name }}:{{.Values.ibmCloud.image.version }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/root/setvalue.sh"]
       containers:
       - name: {{ template "ny-power.fullname" . }}-api
         image: "{{ .Values.image.repository }}/{{.Values.api.image.name }}:{{.Values.api.image.version }}"
