@@ -45,10 +45,13 @@ spec:
     spec:
       revisionHistoryLimit: 2
       initContainers:
-      - name: {{ template "ny-power.fullname" . }}-api
+      - name: {{ template "ny-power.fullname" . }}-api-init
         image: "{{ .Values.image.repository }}/{{.Values.ibmCloud.image.name }}:{{.Values.ibmCloud.image.version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/root/setvalue.sh"]
+        env:
+          - name: MQTT_CONTAINER_NAME
+            value: {{ template "ny-power.fullname" . }}-mqtt
       containers:
       - name: {{ template "ny-power.fullname" . }}-api
         image: "{{ .Values.image.repository }}/{{.Values.api.image.name }}:{{.Values.api.image.version }}"

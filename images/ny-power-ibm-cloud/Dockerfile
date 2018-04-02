@@ -13,3 +13,5 @@ RUN apt-get update && apt-get install curl -y
 # IBM Cloud CLI comes from a sudo bash installer
 RUN curl -sL https://ibm.biz/idt-installer -o /root/idt-installer
 RUN bash /root/idt-installer
+
+COPY setvalue.sh /root/setvalue.sh

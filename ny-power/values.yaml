@@ -28,7 +28,7 @@ base:
 ibmCloud:
   image:
     name: ny-power-ibm-cloud
-    version: 4
+    version: 5
 
 api:
   image:
