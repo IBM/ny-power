@@ -33,7 +33,7 @@ ibmCloud:
 api:
   image:
     name: ny-power-api
-    version: 4
+    version: 8
 
 image:
   repository: registry.ng.bluemix.net/sdague

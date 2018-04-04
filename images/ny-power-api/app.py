@@ -26,11 +26,11 @@ _LOGGER.info("Should have been sent")
 
 @app.route("/")
 def index():
-    return render_template("index.html")
+    return render_template("index.html", mqtt_host=MQTT_HOST)
 
 @app.route("/mqtt")
 def mqtt():
-    return render_template("mqtt.html")
+    return render_template("mqtt.html", mqtt_host=MQTT_HOST)
 
 @app.route("/current/co2")
 def current_co2():

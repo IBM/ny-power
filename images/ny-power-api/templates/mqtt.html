@@ -5,21 +5,23 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
+    {% if google_analytics %}
     <!-- Global site tag (gtag.js) - Google Analytics -->
-    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-114225000-1"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id={{ google_analytics }}"></script>
     <script>
       window.dataLayer = window.dataLayer || [];
       function gtag(){dataLayer.push(arguments);}
       gtag('js', new Date());
 
-      gtag('config', 'UA-114225000-1');
+      gtag('config', '{{ google_analytics }}');
     </script>
+    {% endif %}
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
 
     <link rel="stylesheet" href="static/css/nypower.css">
-    <title>NY ISO Grid CO2 Intensity</title>
+    <title>NY ISO Grid CO2 Intensity - MQTT Console</title>
   </head>
 
     <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
@@ -52,7 +54,7 @@
       <div class="content">
         You can connect to the mqtt stream yourself with the following
         command:<p>
-          <pre>    mosquito_sub -h mqtt.ny-power.org -t ny-power/# -v</pre>
+          <pre>    mosquito_sub -h {{ mqtt_host }} -t ny-power/# -v</pre>
       </div>
 
     </main><!-- /.container -->
@@ -79,7 +81,9 @@
             type="text/javascript"></script>
     <!-- Latest compiled and minified plotly.js JavaScript -->
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script type="text/javascript">
+      var mqttHost = "{{ mqtt_host }}";
+    </script>
     <script src="static/js/mqtt-console.js"></script>
-
   </body>
 </html>
