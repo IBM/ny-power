@@ -49,3 +49,15 @@ to:
 # Steps
 
 ## Prerequisites
+
+# Sample output
+
+# Links
+
+# Learn more
+
+* **Container Orchestration Code Patterns**: Enjoyed this Code Pattern? Check out our other [Container Orchestration Code Patterns](https://developer.ibm.com/code/technologies/container-orchestration/).
+* **Kubernetes on IBM Cloud**: Deliver your apps with the combined power of [Kubernetes and Docker on IBM Cloud](https://www.ibm.com/cloud-computing/bluemix/containers)
+
+# License
+[Apache 2.0](LICENSE)
