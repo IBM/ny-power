@@ -11,9 +11,9 @@ ibm-cloud-image:
 	VERSION=$(shell ./serial.sh ny-power/versions/ibm-cloud); \
 	bx cr build -t $(IMAGE_REG)ny-power-ibm-cloud:$$VERSION images/ny-power-ibm-cloud
 
-base-image: images/$(BASE_IMAGE)/nypower
+base-image:
 	VERSION=$(shell ./serial.sh ny-power/versions/base); \
-	bx cr build -t $(IMAGE_REG)$(BASE_IMAGE):$$VERSION images/$(BASE_IMAGE)
+	bx cr build -t $(IMAGE_REG)/$(BASE_IMAGE):$$VERSION src/
 
 influx-image:
 	VERSION=$(shell ./serial.sh ny-power/versions/influx); \
@@ -26,9 +26,6 @@ mqtt-image:
 web-image:
 	VERSION=$(shell ./serial.sh ny-power/versions/web); \
 	bx cr build -t $(IMAGE_REG)$(WEB_IMAGE):$$VERSION images/$(WEB_IMAGE)
-
-images/$(BASE_IMAGE)/nypower:
-	git clone https://github.com/sdague/nypower images/$(BASE_IMAGE)/nypower
 
 build-images: base-image influx-image mqtt-image web-image ibm-cloud-image
 

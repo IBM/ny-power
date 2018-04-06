@@ -6,8 +6,8 @@ ENV LANG=C.UTF-8
 
 USER root
 
-RUN apt-get update && apt-get install -y python3 python3-pip git
+RUN apt-get update && apt-get install -y python3 python3-pip
 
-COPY nypower/ /root/nypower/
+COPY . /root/nypower/
 
 RUN pip3 install -U /root/nypower/

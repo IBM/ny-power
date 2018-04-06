@@ -6,8 +6,6 @@ ENV LANG=C.UTF-8
 
 USER root
 
-# Azure CLI comes from apt repository
-
 RUN apt-get update && apt-get install curl -y
 
 # IBM Cloud CLI comes from a sudo bash installer
