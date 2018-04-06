@@ -40,15 +40,49 @@ to:
 
 ## Flow
 
+![Architecture Diagram](web/images/arch-diagram.png)
+
+1. The user accesses the website
+2. The webrowser directly accesses the MQTT service
+3. The applications data pump polls NY ISO every minute looking for
+   new data.
+4. Data is pushed to MQTT service
+5. The archiver is subscribed to the MQTT service sends all new data
+   to Influx DB
+6. On any new data it computes current co2 / kWh, and publishes both
+   it, and the recent time series to the MQTT service.
+
 ## Included components
 
+* IBM Cloud Container Service
+
 ## Featured technologies
+
+* Kubernetes: container orchestration
+* Helm: application packaging and deployment for Kubernetes
+* MQTT: light weight publish / subscribe protocol
+* Influxdb: time series database
+* Python: main programming language used for all logic
 
 # Watch the video
 
 # Steps
 
-## Prerequisites
+## 1. Install and configure Helm
+
+## 2. Configure Container Registry
+
+## 3. Build required images
+
+5 images are needed for the application to run
+
+## 4. Update Helm values.yaml
+
+## 5. Install with Helm
+
+```
+> heml install ny-power
+```
 
 # Sample output
 
