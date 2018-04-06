@@ -4,7 +4,7 @@ metadata:
   name: {{ template "ny-power.fullname" . }}-mqtt-pump
 type: Opaque
 data:
-  password: {{ .Files.Get "secrets/mqtt-password" | trim | b64enc }}
+  password: {{ .Values.mqtt.secret | trim | b64enc }}
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim

@@ -5,9 +5,10 @@
 replicaCount: 2
 
 mqtt:
+  secret: AbadSecret
   image:
     name: ny-power-mqtt
-    version: 20180328-1
+    version: 3
   storage:
     size: 1Gi
     class: "ibmc-file-silver"
@@ -23,17 +24,17 @@ influx:
 base:
   image:
     name: ny-power-base
-    version: 2
+    version: 4
 
 ibmCloud:
   image:
     name: ny-power-ibm-cloud
-    version: 6
+    version: 4
 
 api:
   image:
     name: ny-power-api
-    version: 9
+    version: 4
 
 image:
   repository: registry.ng.bluemix.net/sdague
