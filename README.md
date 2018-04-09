@@ -97,14 +97,52 @@ $ bx cr namespace-add ny-power
 
 ## 3. Build required images
 
-5 images are needed for the application to run
+5 images are needed for the application to run. In order to simplify
+this there are 2 makefile targets that exist to generate and display
+versions of the 5 images. When build images is called the version
+number for the image is incremented every time to allow for rolling
+upgrades.
+
+```
+# generate all images
+$ make build-images
+```
+
+The image versions can be displayed with
+
+```
+$ make image-versions
+```
 
 ## 4. Update Helm values.yaml
 
 ## 5. Install with Helm
 
 ```
-> heml install ny-power
+$ heml install ny-power
+```
+
+This will autogenerate a unique name such as laughing-frog. Helm
+allows you to have more than one version of an application running at
+the same time in the same cluster for developent, qa, or A/B testing
+purposes.
+
+You can see the status of deployment with:
+
+```
+$ heml status <laughing-frog>
+```
+
+## 6. Make changes and experiment
+
+As you make changes to the application, either in the helm
+configuration, or make changes to the applications and images, you can
+do a live upgrade of the cluster.
+
+Set any updated image versions in your `values.yaml` and run:
+
+```
+$ helm upgrade <laughing-frog> ny-power
 ```
 
 # Sample output

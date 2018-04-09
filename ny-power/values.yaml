@@ -2,13 +2,14 @@
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
+# The replicas for the web front end
 replicaCount: 2
 
 mqtt:
   secret: AbadSecret
   image:
     name: ny-power-mqtt
-    version: 3
+    version: 4
   storage:
     size: 1Gi
     class: "ibmc-file-silver"
@@ -16,7 +17,7 @@ mqtt:
 influx:
   image:
     name: ny-power-influxdb
-    version: 2
+    version: 3
   storage:
     size: 20Gi
     class: "ibmc-file-silver"
@@ -24,54 +25,19 @@ influx:
 base:
   image:
     name: ny-power-base
-    version: 4
+    version: 7
 
 ibmCloud:
   image:
     name: ny-power-ibm-cloud
-    version: 4
+    version: 5
 
 api:
   image:
     name: ny-power-api
-    version: 4
+    version: 5
 
 image:
-  repository: registry.ng.bluemix.net/sdague
+  repository: registry.ng.bluemix.net/ny-power
   tag: stable
   pullPolicy: Always
-
-service:
-  type: ClusterIP
-  port: 80
-
-ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  path: /
-  hosts:
-    - chart-example.local
-  tls: []
-  #  - secretName: chart-example-tls
-  #    hosts:
-  #      - chart-example.local
-
-resources: {}
-  # We usually recommend not to specify default resources and to leave this as a conscious
-  # choice for the user. This also increases chances charts run on environments with little
-  # resources, such as Minikube. If you do want to specify resources, uncomment the following
-  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-  # limits:
-  #  cpu: 100m
-  #  memory: 128Mi
-  # requests:
-  #  cpu: 100m
-  #  memory: 128Mi
-
-nodeSelector: {}
-
-tolerations: []
-
-affinity: {}
