@@ -116,6 +116,13 @@ $ make image-versions
 
 ## 4. Update Helm values.yaml
 
+Open up `ny-power/values.yaml` and edit the image versions in the
+yaml.
+
+You can optionally change the shared secret under `mqtt.secret` as
+well. This is a shared secret needed to provide write access to the
+mqtt stream.
+
 ## 5. Install with Helm
 
 ```
