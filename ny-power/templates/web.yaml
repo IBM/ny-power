@@ -28,9 +28,9 @@ roleRef:
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "ny-power.fullname" . }}-api
+  name: {{ template "ny-power.fullname" . }}-web
   labels:
-    app: {{ template "ny-power.name" . }}-api
+    app: {{ template "ny-power.name" . }}-web
     chart: {{ template "ny-power.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -38,17 +38,17 @@ spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ template "ny-power.name" . }}-api
+      app: {{ template "ny-power.name" . }}-web
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ template "ny-power.name" . }}-api
+        app: {{ template "ny-power.name" . }}-web
         release: {{ .Release.Name }}
     spec:
       revisionHistoryLimit: 2
       initContainers:
-      - name: {{ template "ny-power.fullname" . }}-api-init
+      - name: {{ template "ny-power.fullname" . }}-web-init
         image: "{{ .Values.image.repository }}/{{.Values.ibmCloud.image.name }}:{{.Values.ibmCloud.image.version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         command: ["/root/setvalue.sh"]
@@ -58,7 +58,7 @@ spec:
           - name: MQTT_SECRET_NAME
             value: {{ template "ny-power.fullname" . }}-mqtt
       containers:
-      - name: {{ template "ny-power.fullname" . }}-api
+      - name: {{ template "ny-power.fullname" . }}-web
         image: "{{ .Values.image.repository }}/{{.Values.web.image.name }}:{{.Values.web.image.version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
@@ -84,9 +84,9 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: {{ template "ny-power.fullname" . }}-api
+  name: {{ template "ny-power.fullname" . }}-web
   labels:
-    app: {{ template "ny-power.name" . }}-api
+    app: {{ template "ny-power.name" . }}-web
     chart: {{ template "ny-power.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
@@ -98,5 +98,5 @@ spec:
     name: {{ template "ny-power.fullname" . }}-web
     protocol: TCP
   selector:
-    app: {{ template "ny-power.name" . }}-api
+    app: {{ template "ny-power.name" . }}-web
     release: {{ .Release.Name }}
