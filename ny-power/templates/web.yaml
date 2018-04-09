@@ -59,7 +59,7 @@ spec:
             value: {{ template "ny-power.fullname" . }}-mqtt
       containers:
       - name: {{ template "ny-power.fullname" . }}-api
-        image: "{{ .Values.image.repository }}/{{.Values.api.image.name }}:{{.Values.api.image.version }}"
+        image: "{{ .Values.image.repository }}/{{.Values.web.image.name }}:{{.Values.web.image.version }}"
         imagePullPolicy: {{ .Values.image.pullPolicy }}
         ports:
         - containerPort: 80
