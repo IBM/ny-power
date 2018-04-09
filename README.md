@@ -154,6 +154,65 @@ $ helm upgrade <laughing-frog> ny-power
 
 # Sample output
 
+## Deployment
+
+A successful deployment looks like the following:
+
+```
+$ helm status lovely-sasquatch
+LAST DEPLOYED: Mon Apr  9 10:03:51 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+
+RESOURCES:
+==> v1/Secret
+NAME                                 TYPE    DATA  AGE
+lovely-sasquatch-ny-power-mqtt-pump  Opaque  1     5h
+
+==> v1/PersistentVolumeClaim
+NAME                                  STATUS  VOLUME                                    CAPACITY  ACCESS MODES  STORAGECLASS      AGE
+lovely-sasquatch-ny-power-influx-nfs  Bound   pvc-47abb773-3bf4-11e8-aca5-da75763193ce  20Gi      RWX           ibmc-file-silver  5h
+lovely-sasquatch-ny-power-mqtt-nfs    Bound   pvc-47ac4f95-3bf4-11e8-aca5-da75763193ce  20Gi      RWX           ibmc-file-silver  5h
+
+==> v1/Role
+NAME                                       AGE
+lovely-sasquatch-ny-power-services-reader  5h
+
+==> v1/RoleBinding
+NAME                                     AGE
+lovely-sasquatch-ny-power-read-services  5h
+
+==> v1/Service
+NAME                              TYPE          CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
+lovely-sasquatch-ny-power-influx  ClusterIP     172.21.251.185  <none>        8086/TCP                     5h
+lovely-sasquatch-ny-power-mqtt    LoadBalancer  172.21.112.218  169.60.82.10  1883:30350/TCP,80:30403/TCP  5h
+lovely-sasquatch-ny-power-web     LoadBalancer  172.21.27.24    169.60.82.12  80:32332/TCP                 4h
+
+==> v1/Deployment
+NAME                               DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
+lovely-sasquatch-ny-power-archive  1        1        1           1          5h
+lovely-sasquatch-ny-power-pump     1        1        1           1          5h
+lovely-sasquatch-ny-power-influx   1        1        1           1          5h
+lovely-sasquatch-ny-power-mqtt     1        1        1           1          5h
+lovely-sasquatch-ny-power-web      2        2        2           2          4h
+
+==> v1/Pod(related)
+NAME                                                READY  STATUS   RESTARTS  AGE
+lovely-sasquatch-ny-power-archive-7c4fb447f7-vxhf7  1/1    Running  0         5h
+lovely-sasquatch-ny-power-pump-86dd6fd597-77dtp     1/1    Running  1         5h
+lovely-sasquatch-ny-power-influx-687bbffbc5-z586j   1/1    Running  0         5h
+lovely-sasquatch-ny-power-mqtt-5c4d7744b5-pp77l     1/1    Running  0         5h
+lovely-sasquatch-ny-power-web-764dd7797c-95wsl      1/1    Running  0         4h
+lovely-sasquatch-ny-power-web-764dd7797c-x9dfv      1/1    Running  0         4h
+
+```
+
+## Application
+
+A successful deployment of the application will look as follows:
+
+![NY Power intensity](/web/images/ny-power-web.png)
+
 # Links
 
 # Learn more
