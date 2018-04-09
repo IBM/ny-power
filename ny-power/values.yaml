@@ -32,9 +32,9 @@ ibmCloud:
     name: ny-power-ibm-cloud
     version: 5
 
-api:
+web:
   image:
-    name: ny-power-api
+    name: ny-power-web
     version: 5
 
 image:

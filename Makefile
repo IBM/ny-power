@@ -1,6 +1,6 @@
 REG_NAMESPACE=ny-power
 MQTT_IMAGE=ny-power-mqtt
-WEB_IMAGE=ny-power-api
+WEB_IMAGE=ny-power-web
 INFLUXDB_IMAGE=ny-power-influxdb
 IMAGE_REG=registry.ng.bluemix.net/$(REG_NAMESPACE)/
 BASE_IMAGE=ny-power-base
