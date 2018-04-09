@@ -70,7 +70,30 @@ to:
 
 ## 1. Install and configure Helm
 
+Install Helm. Full instructions are
+at [docs.helm.sh](https://docs.helm.sh/using_helm/#installing-helm)
+
+Create a new cluster in IBM Cloud and initialize helm for it:
+
+```
+# Create cluster
+$ bx cs cluster-create <clustername>
+
+# Set kubectl config for it
+$ $(bx cs cluster-config <clusternam> | grep export)
+
+# Initialize helm
+$ helm init
+```
+
 ## 2. Configure Container Registry
+
+The ny-power application needs to upload a number of custom
+images. You need to create a custom container registry to upload into.
+
+```
+$ bx cr namespace-add ny-power
+```
 
 ## 3. Build required images
 

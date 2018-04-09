@@ -33,6 +33,11 @@ web-image: $(VERSION_DIR)
 
 build-images: base-image influx-image mqtt-image web-image ibm-cloud-image
 
+image-versions:
+	for f in $(VERSION_DIR)/*; do \
+		echo $$(basename $$f) $$(cat $$f); \
+	done
+
 token:
 	kubectl config view -o jsonpath='{.users[0].user.auth-provider.config.id-token}'
 	@echo
