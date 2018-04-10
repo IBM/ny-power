@@ -81,12 +81,16 @@
             <li>ny-power-pump: a polling service that polls for CSV
               files, and publishes these to an mqtt server</li>
             <li>ny-power-mqtt: an mqtt server available
-              at <b>mqtt.ny-power.org</b></li>
+              at <b>{{ mqtt_host }</b></li>
             <li>ny-power-archive: tooling that follows the mqtt server
-            and writes to an influx db for time series
+              and writes to an influx db for time series
               calculations</li>
+            <li>ny-power-influx: an influx db instance for storing the
+              data collected, and extracting the historical time
+              series
+            </li>
             <li>ny-power-api: provides example front end website which
-            has no active polling, and updates exclusively through
+              has no active polling, and updates exclusively through
               responding to data on the mqtt bus.</li>
           </ul>
         </p>

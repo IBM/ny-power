@@ -7,20 +7,29 @@ charge the car?
 Static time of use billing in our area marks peak at 2pm - 7pm
 weekdays. While that's the only time the power company doesn't want
 you to charge, the grid varies a lot over the course of the day to
-match demand. The New York State Indepdendent System Operator (NYISO)
-is responsible for managing the power grid in NY State. They provide
-near real time data about what fuels are being consumed in NY State to
-provide residents electricity.
+match demand. The New York State Indepdendent System Operator
+([NYISO](http://www.nyiso.com/public/index.jsp)) is responsible for
+managing the power grid in NY State. They provide near real time data
+about what fuel sources are being used to generate electricity in NY
+State.
 
 ![NY Power Realtime Grid](web/images/screenshot_372.png)
 
-The data that powers this website is public, but there is no public
-API. There are instead a set of 5 minute resolution CSV files
-published every 5 - 20 minutes at http://mis.nyiso.com/public/. This
-is turned into a public [MQTT](http://mqtt.org/) service which create
-a very low resource way of consuming this data. After injesting this
-data it also publishes an estimated value of the CO<sub>2</sub> per
-kWh over the course of the day.
+While the data that powers this is public, there is no public API. The
+NY ISO does publish a set of 5 minute resolution CSV files on their
+servers at http://mis.nyiso.com/public/. These are updated every 5 to
+20 minutes.
+
+Instead of having every application parse CSV files directly, we can
+do better by making the data into a real time stream. This is done by
+polling and parsing the CSV in a micro service and publishing new
+events to a public [MQTT](http://mqtt.org/) service. The overhead for
+consuming a public MQTT service is very low, and requires just an open
+socket. After injesting this data we can also provide "value add"
+analysis of it, such as computing the estimated CO<sub>2</sub> emitted
+per kWh of electricity generated over the course of the day. This
+added value data is also published on the MQTT bus and can be consumed
+directly.
 
 A web page which connects directly to the MQTT service over a
 websocket shows how you can provide a dyanmic web site with no server
@@ -58,11 +67,13 @@ to:
 
 ## Featured technologies
 
-* Kubernetes: container orchestration
-* Helm: application packaging and deployment for Kubernetes
-* MQTT: light weight publish / subscribe protocol
-* Influxdb: time series database
-* Python: main programming language used for all logic
+* [Kubernetes](https://kubernetes.io/): container orchestration
+* [Helm](https://docs.helm.sh/): application packaging and deployment
+  for Kubernetes
+* [MQTT](http://mqtt.org/): light weight publish / subscribe protocol
+* [Mosquitto](https://mosquitto.org/): open source MQTT broker
+* [Influxdb](https://www.influxdata.com/): time series database
+* [Python](https://www.python.org/): main programming language used for all logic
 
 # Watch the video
 
