@@ -5,7 +5,6 @@
 
 import pytest
 
-from click.testing import CliRunner
 
 from nypower import nypower
 from nypower import mqtt
@@ -23,6 +22,7 @@ FUELS = {
     "Hydro": 2814
 }
 
+
 @pytest.fixture
 def fuel_sample():
     reading = collector.FuelMixReading("02/09/2018 06:05:00")
@@ -30,8 +30,9 @@ def fuel_sample():
         reading.add_fuel(k, v)
     return reading
 
+
 def test_fuel_mix_reading(fuel_sample):
-    assert fuel_sample.total_kW == 14314
+    assert fuel_sample.total_MW == 14314
 
     assert int(fuel_sample.total_co2) == 2686
 
