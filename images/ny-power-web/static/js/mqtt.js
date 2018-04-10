@@ -80,7 +80,12 @@ function onMessageArrived(message) {
                 type: 'scatter'
             }
         ];
-        Plotly.newPlot('co2_graph', plot);
+        var layout = {
+            yaxis: {
+                title: "g CO2 / kWh",
+            }
+        };
+        Plotly.newPlot('co2_graph', plot, layout);
     }
     if (message.destinationName == "ny-power/application/webui") {
         if (message.payloadString == "reload") {
