@@ -17,10 +17,10 @@ provide residents electricity.
 The data that powers this website is public, but there is no public
 API. There are instead a set of 5 minute resolution CSV files
 published every 5 - 20 minutes at http://mis.nyiso.com/public/. This
-is turned into a public MQTT service which create a very low resource
-way of consuming this data. After injesting this data it also
-publishes an estimated value of the CO2 per kWh over the course of the
-day.
+is turned into a public [MQTT](http://mqtt.org/) service which create
+a very low resource way of consuming this data. After injesting this
+data it also publishes an estimated value of the CO<sub>2</sub> per
+kWh over the course of the day.
 
 A web page which connects directly to the MQTT service over a
 websocket shows how you can provide a dyanmic web site with no server
