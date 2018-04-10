@@ -49,8 +49,8 @@ to:
 4. Data is pushed to MQTT service
 5. The archiver is subscribed to the MQTT service sends all new data
    to Influx DB
-6. On any new data it computes current co2 / kWh, and publishes both
-   it, and the recent time series to the MQTT service.
+6. On any new data it computes current CO<sub>2</sub> / kWh, and
+   publishes both it, and the recent time series to the MQTT service.
 
 ## Included components
 
