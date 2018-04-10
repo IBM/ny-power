@@ -213,6 +213,16 @@ A successful deployment of the application will look as follows:
 
 ![NY Power intensity](/web/images/ny-power-web.png)
 
+This visualizes a number of things:
+
+1. The current carbon intensity of the NY ISO grid
+2. A historical view of carbon intensity over the last 20 hours to
+   visualize trends
+3. The current mix of fuels in the NY ISO grid
+
+All of these will be updated everytime there is new information
+published on the MQTT bus with no user interaction or polling needed.
+
 # Links
 
 # Learn more
