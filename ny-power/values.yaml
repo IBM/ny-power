@@ -35,7 +35,7 @@ ibmCloud:
 web:
   image:
     name: ny-power-web
-    version: 9
+    version: 10
 
 image:
   repository: registry.ng.bluemix.net/ny-power
