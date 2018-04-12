@@ -156,3 +156,170 @@ specifies the size and class of storage we need, and a secret.
 
 The `_helpers.tpl` file is part of the convention of making Helm
 applications able to deploy more than one copy.
+
+```mustache
+
+{{/* vim: set filetype=mustache: */}}
+{{/*
+Expand the name of the chart.
+*/}}
+{{- define "ny-power.name" -}}
+{{- default .Chart.Name .Values.nameOverride | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+{{/*
+Create a default fully qualified app name.
+We truncate at 63 chars because some Kubernetes name fields are limited to this (by the DNS naming spec).
+If release name contains chart name it will be used as a full name.
+*/}}
+{{- define "ny-power.fullname" -}}
+{{- if .Values.fullnameOverride -}}
+{{- .Values.fullnameOverride | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- $name := default .Chart.Name .Values.nameOverride -}}
+{{- if contains $name .Release.Name -}}
+{{- .Release.Name | trunc 63 | trimSuffix "-" -}}
+{{- else -}}
+{{- printf "%s-%s" .Release.Name $name | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+{{- end -}}
+{{- end -}}
+
+{{/*
+Create chart name and version as used by the chart label.
+*/}}
+{{- define "ny-power.chart" -}}
+{{- printf "%s-%s" .Chart.Name .Chart.Version | replace "+" "_" | trunc 63 | trimSuffix "-" -}}
+{{- end -}}
+
+```
+
+Everytime you do a `helm install` a uniq release name is generated
+(which you can provide if you want). The default `_helpers` file
+creates some utility variables that can be used in
+templates. `ny-power.fullname` being the critical one, as that will be
+different between two different installations of the ny-power app.
+
+The other default templates can be deleted, they aren't very useful if
+you already have your application specified in kubernetes yaml.
+
+
+# A Helmified Example: MQTT #
+
+The following is the definition to bring up the MQTT server:
+
+```yaml
+
+apiVersion: v1
+kind: Secret
+metadata:
+  name: {{ template "ny-power.fullname" . }}-mqtt-pump
+type: Opaque
+data:
+  password: {{ .Values.mqtt.secret | trim | b64enc }}
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ template "ny-power.fullname" . }}-mqtt-nfs
+  annotations:
+    volume.beta.kubernetes.io/storage-class: {{ .Values.mqtt.storage.class }}
+  labels:
+    app: {{ template "ny-power.name" . }}-mqtt
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  accessModes:
+    - ReadWriteMany
+  resources:
+    requests:
+      storage: {{ .Values.mqtt.storage.size }}
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "ny-power.fullname" . }}-mqtt
+  labels:
+    app: {{ template "ny-power.name" . }}-mqtt
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ template "ny-power.name" . }}-mqtt
+      release: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "ny-power.name" . }}-mqtt
+        release: {{ .Release.Name }}
+    spec:
+      volumes:
+        - name: {{ template "ny-power.fullname" . }}-mqtt-volume
+          persistentVolumeClaim:
+            claimName: {{ template "ny-power.fullname" . }}-mqtt-nfs
+      containers:
+        - name: {{ template "ny-power.fullname" . }}-mqtt
+          image: "{{ .Values.image.repository }}/{{.Values.mqtt.image.name }}:{{.Values.mqtt.image.version }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          env:
+            - name: MQTT_PUMP_PASS
+              valueFrom:
+                secretKeyRef:
+                  name: {{ template "ny-power.fullname" . }}-mqtt-pump
+                  key: password
+          volumeMounts:
+            - name: {{ template "ny-power.fullname" . }}-mqtt-volume
+              mountPath: "/shared"
+          ports:
+            - containerPort: 80
+            - containerPort: 1883
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "ny-power.fullname" . }}-mqtt
+  labels:
+    app: {{ template "ny-power.name" . }}-mqtt
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 1883
+    targetPort: 1883
+    name: mqtt
+    protocol: TCP
+  - port: 80
+    targetPort: 80
+    name: http
+    protocol: TCP
+  selector:
+    app: {{ template "ny-power.name" . }}-mqtt
+    release: {{ .Release.Name }}
+
+```
+
+This includes 4 resources, a Secret, Persistent Volume Claim,
+Deployment, and Service in a single file. The MQTT server needs
+persistent storage to provide retain messages, especially in the event
+the pod crashes.
+
+The important things to highlight are the following. The name for
+every resource is based on `{{ template "ny-power.fullname" . }}`,
+which means that it might be something like
+`lovely-sasquatch-ny-power` if left to autogeneration, or
+`prod-ny-power` if you set it manually.
+
+Every resource has a set of labels which include the `app`, `chart`,
+and `release`. As you can see, the Service selector needs to use both
+`app` and `release` to correctly bind to the right container. Without
+this it couldn't distinguish between different installed versions.
+
+And lastly you'll see `.Values` references. These are references to
+the values.yaml we looked at previously. It means there is one single
+place to update these.
