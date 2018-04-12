@@ -421,3 +421,99 @@ roleRef:
 Together these allow us to use an initContainer to wait for, and
 discover a derived value (an external IP address) of the application,
 and hand it off to the deploy container as a secret.
+
+
+# Installing with helm #
+
+Because we've been careful in using these templated names everywhere,
+installation of the application much simpler.
+
+```
+$ helm install ny-power/
+
+NAME:   calling-stingray
+LAST DEPLOYED: Thu Apr 12 16:12:56 2018
+NAMESPACE: default
+STATUS: DEPLOYED
+
+RESOURCES:
+==> v1/PersistentVolumeClaim
+NAME                                  STATUS   VOLUME            CAPACITY  ACCESS MODES  STORAGECLASS  AGE
+calling-stingray-ny-power-influx-nfs  Pending  ibmc-file-silver  0s
+calling-stingray-ny-power-mqtt-nfs    Pending  ibmc-file-silver  0s
+
+==> v1/Role
+NAME                                       AGE
+calling-stingray-ny-power-services-reader  0s
+
+==> v1/RoleBinding
+NAME                                     AGE
+calling-stingray-ny-power-read-services  0s
+
+==> v1/Service
+NAME                              TYPE          CLUSTER-IP     EXTERNAL-IP   PORT(S)                      AGE
+calling-stingray-ny-power-influx  ClusterIP     172.21.151.78  <none>        8086/TCP                     0s
+calling-stingray-ny-power-mqtt    LoadBalancer  172.21.84.221  169.60.82.11  1883:30865/TCP,80:30111/TCP  0s
+calling-stingray-ny-power-web     LoadBalancer  172.21.65.246  <pending>     80:32431/TCP                 0s
+
+==> v1/Deployment
+NAME                               DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
+calling-stingray-ny-power-pump     1        1        1           0          0s
+calling-stingray-ny-power-archive  1        1        1           0          0s
+calling-stingray-ny-power-influx   1        1        1           0          0s
+calling-stingray-ny-power-mqtt     1        1        1           0          0s
+calling-stingray-ny-power-web      2        0        0           0          0s
+
+==> v1/Pod(related)
+NAME                                                READY  STATUS             RESTARTS  AGE
+calling-stingray-ny-power-archive-5bf4546d67-vss6d  0/1    ContainerCreating  0         0s
+calling-stingray-ny-power-pump-7cd4f6b558-8p8z4     0/1    ContainerCreating  0         0s
+calling-stingray-ny-power-influx-7d54ccc6db-bkdls   0/1    Pending            0         0s
+calling-stingray-ny-power-mqtt-dbd85777c-h76dk      0/1    Pending            0         0s
+calling-stingray-ny-power-web-6b9ffc644b-4ts2w      0/1    Init:0/1           0         0s
+calling-stingray-ny-power-web-6b9ffc644b-dhh52      0/1    Init:0/1           0         0s
+
+==> v1/Secret
+NAME                                 TYPE    DATA  AGE
+calling-stingray-ny-power-mqtt-pump  Opaque  1     0s
+
+```
+
+... that's it. The automatically generated name (calling-stingray in
+this case) will be shown as well as the initial `helm status` output.
+
+The ny-power application takes about 5 minutes to fully provision,
+largely because of it's two persistent storage backends.
+
+# Upgrading with helm #
+
+After your initial install, every other opperation on the application
+should be an upgrade. You can change any of the templates, rebuild
+images and change their version numbers in `values.yaml`, or any other
+change to the application. After that, a `helm upgrade
+calling-stingray` will upgrade the application. Helm is stateful
+enough to understand both changes to existing resources, and that some
+resources may no longer exist after your changes (and delete them).
+
+# Dev, Qa, Prod #
+
+One of the values of the templating and the conventions is that it
+becomes quite reasonable to spin up different versions of the
+application for development.
+
+```
+$ helm install -n prod ny-power/ -f prod-values.yaml
+$ helm install -n dev ny-power/
+$ helm install -n my-odd-feature ny-power/
+```
+
+All of these will safely coexist within a single Kubernetes cluster,
+and not interfere with each other. In the prod case we can even give
+it a more secure mqtt password in an overlay values.yaml file, or give
+new image verions to the dev cluster.
+
+Many of these instances of the application might be long running, in
+which case `upgrade` is the right way to move them forward. Some might
+be single use to test a patch manually or via continuous integration,
+in this case `helm delete` does a good job completely cleaning up
+after the installation afterwards.
