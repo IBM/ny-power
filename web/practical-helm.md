@@ -517,3 +517,28 @@ which case `upgrade` is the right way to move them forward. Some might
 be single use to test a patch manually or via continuous integration,
 in this case `helm delete` does a good job completely cleaning up
 after the installation afterwards.
+
+# Being Practical with Helm #
+
+My experiences with Helm thus far is that it's extremely useful when
+you focus on those three key features:
+
+* Templating for `kubectl` files
+* A set of conventions for those templates which allow multiple
+  simultaneous deployments
+* A state engine running in the kubernetes cluster that helps with
+  upgrading an application
+
+With that it makes it much easier to iterate on your deployment
+architecture, try out new ideas, and rollback when required. It also
+makes it much easier to hand off to other people in a way that they
+can install it. This process drastically simplified the ny-power
+application, which had gotten pretty unwieldly as a set of 15 kubectl
+files. The stateful upgrade also means you can evolve naming in your
+deployment without having to worry about cleaning up old bad
+resources.
+
+If you are spending time with Kubernetes, Helm is definitely worth
+investing time to get comfortable with, and put into your
+toolbox. Hopefully this practical introduction is helpful in starting
+that journey.
