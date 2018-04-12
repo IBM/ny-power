@@ -1,4 +1,4 @@
-var client = new Paho.MQTT.Client("mqtt.ny-power.org", Number("80"), "client-" + Math.random());
+var client = new Paho.MQTT.Client(mqttHost, Number("80"), "client-" + Math.random());
 
 // set callback handlers
 client.onConnectionLost = onConnectionLost;
