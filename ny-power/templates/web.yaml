@@ -66,10 +66,6 @@ spec:
         env:
           - name: INFLUXDB_HOST
             value: {{ template "ny-power.fullname" . }}-influx
-          ###############################
-          #
-          # We set this via init
-          # container into /root/mqtt_host
           - name: MQTT_HOST
             valueFrom:
               secretKeyRef:

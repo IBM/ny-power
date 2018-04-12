@@ -322,4 +322,102 @@ this it couldn't distinguish between different installed versions.
 
 And lastly you'll see `.Values` references. These are references to
 the values.yaml we looked at previously. It means there is one single
-place to update these.
+place to update these. As we'll see later, you can also create
+additional overrides here for specific deployments.
+
+# Handling Service Dependencies, Kube API, and ACLs #
+
+One of the surprising things I found was that Helm *does not* do
+anything around waiting for services to be ready before starting
+others. It is just translating all the templates to kubenetes yaml,
+submitting them to the API, and considering it done.
+
+In looking around for best practices here, the current community
+pattern is using `initContainers` to delay launching certain services
+until their dependencies are ready.
+
+In the `ny-power` application we need to have access to the External
+IP address of the MQTT service before the web UI starts. That web UI
+is connecting directly to the MQTT service from the user's browser. So
+we have a web init container that runs in a polling loop before the
+web console starts.
+
+```yaml
+
+...
+      initContainers:
+      - name: {{ template "ny-power.fullname" . }}-web-init
+        image: "{{ .Values.image.repository }}/{{.Values.ibmCloud.image.name }}:{{.Values.ibmCloud.image.version }}"
+        imagePullPolicy: {{ .Values.image.pullPolicy }}
+        command: ["/root/setvalue.sh"]
+        env:
+          - name: MQTT_CONTAINER_NAME
+            value: {{ template "ny-power.fullname" . }}-mqtt
+          - name: MQTT_SECRET_NAME
+            value: {{ template "ny-power.fullname" . }}-mqtt
+...
+
+```
+
+This is running the following code to poll for the loadBalancer IP
+address, and once found set a secret with it's value.
+
+```bash
+
+#!/bin/bash
+
+set -x
+
+for i in {1..300}; do
+    MQTT_HOST=$(kubectl get svc ${MQTT_CONTAINER_NAME}  -o jsonpath='{.status.loadBalancer.ingress[0].ip}')
+    if [[ -z "$MQTT_HOST" ]]; then
+        sleep 2
+    else
+        kubectl create secret generic ${MQTT_SECRET_NAME} --from-literal=host=${MQTT_HOST}
+        exit 0
+    fi
+done
+
+exit 1
+
+```
+
+Starting in Kubernetes 1.9 the API inside the cluster is disabled by
+default. So out of the box the above script would fail with a
+permissions problem. The following role definition enables just the
+getting of service credentials, and the setting of secrets. As secrets
+still can't be read this is a relatively low risk set of exposures.
+
+```yaml
+
+kind: Role
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  namespace: default
+  name: {{ template "ny-power.fullname" . }}-services-reader
+rules:
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["services"]
+  verbs: ["get"]
+- apiGroups: [""] # "" indicates the core API group
+  resources: ["secrets"]
+  verbs: ["create"]
+---
+kind: RoleBinding
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: {{ template "ny-power.fullname" . }}-read-services
+  namespace: default
+subjects:
+- kind: Group
+  name: system:serviceaccounts
+  apiGroup: rbac.authorization.k8s.io
+roleRef:
+  kind: Role
+  name: {{ template "ny-power.fullname" . }}-services-reader
+  apiGroup: rbac.authorization.k8s.io
+```
+
+Together these allow us to use an initContainer to wait for, and
+discover a derived value (an external IP address) of the application,
+and hand it off to the deploy container as a secret.
