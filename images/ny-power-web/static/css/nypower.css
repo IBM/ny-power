@@ -1,11 +1,6 @@
 
 /* Sticky footer styles
 -------------------------------------------------- */
-@font-face {
-    font-family: "IBM Plex Sans";
-    src: url("https://ace-common-production-black.cdn.us-south.s-bluemix.net/api/v6/fonts/IBMPlexSans-Regular-Latin1.woff2");
-}
-
 html {
   position: relative;
   min-height: 100%;
