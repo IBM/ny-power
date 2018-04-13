@@ -5,7 +5,7 @@ deployment yaml files, they create pods which auto restart when things
 go wrong, and life is good. All of this is done with `kubectl`, which
 is straight forward once you learn the verbs and resource types it can
 support. But as the complexity of what you are doing with Kubernetes
-moves beyond trivial examples, managing that via kubectl gets
+moves beyond trivial examples, managing that via `kubectl` gets
 challenging... fast.
 
 What if you need to test a tweak to a resource, but keep the existing
@@ -15,7 +15,7 @@ you have changes you like? Helm helps with these.
 ## Helm Key Features ##
 
 Helm calls itself the package manager for Kubernetes. As someone
-steeped in decades of Linux package management, this explaination was
+steeped in decades of Linux package management, this explanation was
 actually confusing to me. Because Helm does nothing to help you manage
 images, which is a key part of Linux package management.
 
@@ -36,7 +36,7 @@ Let's look at a medium complexity
 application: [ny-power.org](http://ny-power.org). This provides an
 MQTT event stream of the current fuel sources used to generate
 electricity in the State of New York, as well as current, and recent
-carbon intensitity of that fuel mix. It also provides a web dashboard
+carbon intensity of that fuel mix. It also provides a web dashboard
 to see that data.
 
 It works through having 5 different microservices; 5 different
@@ -44,7 +44,7 @@ container images; 2 pods with persistent storage; 2 services with
 external IP addresses; and 1 custom role to expose MQTT external
 address to other services; and 1 shared secret for writing to the MQTT
 service. It's enough complexity to start to show where helm becomes
-more useful than managing eveything yourself.
+more useful than managing everything yourself.
 
 Using this as an example application we'll go through the process of building
 a "package" with helm and then show how to deploy it in a kubernetes cluster.
@@ -105,7 +105,7 @@ set.
 
 `values.yaml` is where you store values that will be used in the
 templates later. That should includes image names and versions, and
-any tunables in your application. This is the values.yaml file for
+any tunables in your application. This is the `values.yaml` file for
 ny-power:
 
 ```yaml
@@ -327,7 +327,7 @@ this it couldn't distinguish between different installed versions. The
 `chart` label just specifies which chart to use.
 
 And lastly you'll see `.Values` references. These are references to
-the values.yaml we looked at previously. It means there is one single
+the `values.yaml` we looked at previously. It means there is one single
 place to update these. As we'll see later, you can also create
 additional overrides here for specific deployments.
 
@@ -493,7 +493,7 @@ largely because of it's two persistent storage backends.
 
 # Upgrading with helm #
 
-After your initial install, every other opperation on the application
+After your initial install, every other operation on the application
 should be an upgrade. You can change any of the templates, rebuild
 images and change their version numbers in `values.yaml`, or any other
 change to the application. After that, a `helm upgrade
@@ -515,8 +515,8 @@ $ helm install -n my-odd-feature ny-power/
 
 All of these will safely coexist within a single Kubernetes cluster,
 and not interfere with each other. In the prod case we can even give
-it a more secure mqtt password in an overlay values.yaml file, or give
-new image verions to the dev cluster.
+it a more secure mqtt password in an overlay `values.yaml` file, or give
+new image versions to the dev cluster.
 
 Many of these instances of the application might be long running, in
 which case `upgrade` is the right way to move them forward. Some might
