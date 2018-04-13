@@ -46,6 +46,8 @@ address to other services; and 1 shared secret for writing to the MQTT
 service. It's enough complexity to start to show where helm becomes
 more useful than managing eveything yourself.
 
+Using this as an example application we'll go through the process of building
+a "package" with helm and then show how to deploy it in a kubernetes cluster.
 
 ## helm create ##
 
@@ -206,6 +208,9 @@ you already have your application specified in kubernetes yaml.
 
 # A Helmified Example: MQTT #
 
+After constructing the helm chart for the application it's time to build the
+kubernetes yaml file for the application and have it leverage the chart.
+
 The following is the definition to bring up the MQTT server:
 
 ```yaml
@@ -318,7 +323,8 @@ which means that it might be something like
 Every resource has a set of labels which include the `app`, `chart`,
 and `release`. As you can see, the Service selector needs to use both
 `app` and `release` to correctly bind to the right container. Without
-this it couldn't distinguish between different installed versions.
+this it couldn't distinguish between different installed versions. The
+`chart` label just specifies which chart to use.
 
 And lastly you'll see `.Values` references. These are references to
 the values.yaml we looked at previously. It means there is one single
