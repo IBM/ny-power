@@ -9,7 +9,7 @@ charge the car?
 Static time of use billing in our area marks peak at 2pm - 7pm
 weekdays. While that's the only time the power company doesn't want
 you to charge, the grid varies a lot over the course of the day to
-match demand. The New York State Indepdendent System Operator
+match demand. The New York State Independent System Operator
 ([NYISO](http://www.nyiso.com/public/index.jsp)) is responsible for
 managing the power grid in NY State. They provide near real time data
 about what fuel sources are being used to generate electricity in NY
@@ -34,7 +34,7 @@ added value data is also published on the MQTT bus and can be consumed
 directly.
 
 A web page which connects directly to the MQTT service over a
-websocket shows how you can provide a dyanmic web site with no server
+websocket shows how you can provide a dynamic web site with no server
 polling, only updating when relevant data is provided.
 
 The entire application is deployed in Kubernetes using Helm. This
@@ -54,7 +54,7 @@ to:
 ![Architecture Diagram](web/images/arch-diagram.png)
 
 1. The user accesses the website
-2. The webrowser directly accesses the MQTT service
+2. The web browser directly accesses the MQTT service
 3. The applications data pump polls NY ISO every minute looking for
    new data.
 4. Data is pushed to MQTT service
