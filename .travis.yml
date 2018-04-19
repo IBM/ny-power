@@ -9,4 +9,4 @@ matrix:
     - os: linux
       python: 3.6
       env: TOXENV=flake8
-script: tox
+script: cd src && tox
