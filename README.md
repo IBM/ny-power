@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/IBM/ny-power.svg?branch=master)](https://travis-ci.org/IBM/ny-power)
+
 # Making public data available as an event stream #
 
 We recently bought a Chevy Bolt EV, which we use as our primary
