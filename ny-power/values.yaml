@@ -41,3 +41,6 @@ image:
   repository: registry.ng.bluemix.net/ny-power
   tag: stable
   pullPolicy: Always
+
+# Change to false to prevent reporting of metrics
+reportMetrics: true

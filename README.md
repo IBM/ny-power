@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/IBM/ny-power.svg?branch=master)](https://travis-ci.org/IBM/ny-power)
+![IBM Cloud Deployments](https://metrics-tracker.mybluemix.net/stats/e6f9d141a3ed9ca3f0f64115e2dfb867/badge.svg) [![Build Status](https://travis-ci.org/IBM/ny-power.svg?branch=master)](https://travis-ci.org/IBM/ny-power)
 
 # Making public data available as an event stream #
 
@@ -242,6 +242,19 @@ published on the MQTT bus with no user interaction or polling needed.
 
 * **Container Orchestration Code Patterns**: Enjoyed this Code Pattern? Check out our other [Container Orchestration Code Patterns](https://developer.ibm.com/code/technologies/container-orchestration/).
 * **Kubernetes on IBM Cloud**: Deliver your apps with the combined power of [Kubernetes and Docker on IBM Cloud](https://www.ibm.com/cloud-computing/bluemix/containers)
+
+# Privacy Notice
+
+Sample Kubernetes Yaml file that includes this package may be configured to track deployments to [IBM Cloud](https://www.bluemix.net/) and other Kubernetes platforms. The following information is sent to a [Deployment Tracker](https://github.com/IBM/metrics-collector-service) service on each deployment:
+
+* Kubernetes Cluster Provider(`IBM Cloud,Minikube,etc`)
+* Kubernetes Cluster ID (Only from IBM Cloud's cluster)
+
+This data is collected from the Kubernetes Job in the sample application's yaml file. This data is used by IBM to track metrics around deployments of sample applications to IBM Cloud to measure the usefulness of our examples so that we can continuously improve the content we offer to you. Only deployments of sample applications that include code to ping the Deployment Tracker service will be tracked.
+
+## Disabling Deployment Tracking
+
+Set `reportMetrics` to `false` in `ny-power/values.yaml`
 
 # License
 [Apache 2.0](LICENSE)
