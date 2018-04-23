@@ -1,0 +1,23 @@
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ template "ny-power.fullname" . }}-metrics
+spec:
+  template:
+    metadata:
+      name: {{ template "ny-power.fullname" . }}-metrics
+    spec:
+      containers:
+        - env:
+            - {name: config, value: '{"repository_id":
+                "ny-power", "target_runtimes":
+                ["Kubernetes Cluster"], "target_services":
+                [null], "event_id": "web", "event_organizer":
+                "dev-journeys"}'}
+            - {name: language, value: ''}
+          image: journeycode/kubernetes:latest
+          name: ny-power-metrics
+          resources:
+            limits: {cpu: 100m}
+      restartPolicy: Never
