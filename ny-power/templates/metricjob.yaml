@@ -1,5 +1,49 @@
 {{- if .Values.reportMetrics -}}
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ template "ny-power.fullname" . }}-metricssa
+  namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  namespace: default
+  name: {{ template "ny-power.fullname" . }}-metricsrole
+rules:
+- apiGroups: [""]
+  resources: ["nodes", "pods", "configmaps"]
+  verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ template "ny-power.fullname" . }}-metricsrolebind
+  namespace: default
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ template "ny-power.fullname" . }}-metricsrole
+subjects:
+  - kind: ServiceAccount
+    name:  {{ template "ny-power.fullname" . }}-metricssa
+    namespace: default
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: {{ template "ny-power.fullname" . }}-metricsrolebindsystem
+  namespace: kube-system
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: {{ template "ny-power.fullname" . }}-metricsrole
+subjects:
+  - kind: ServiceAccount
+    name:  {{ template "ny-power.fullname" . }}-metricssa
+    namespace: default
+---
 apiVersion: batch/v1
 kind: Job
 metadata:
@@ -9,6 +53,7 @@ spec:
     metadata:
       name: {{ template "ny-power.fullname" . }}-metrics
     spec:
+      serviceAccountName: {{ template "ny-power.fullname" . }}-metricssa
       containers:
         - env:
             - {name: config, value: '{"repository_id":
