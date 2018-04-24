@@ -13,8 +13,11 @@ metadata:
   name: {{ template "ny-power.fullname" . }}-metricsrole
 rules:
 - apiGroups: [""]
-  resources: ["nodes", "pods", "configmaps"]
+  resources: ["configmaps"]
   verbs: ["get"]
+- apiGroups: [""]
+  resources: ["nodes", "pods"]
+  verbs: ["list", "get", "watch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
