@@ -33,20 +33,6 @@ subjects:
     name:  {{ template "ny-power.fullname" . }}-metricssa
     namespace: default
 ---
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: {{ template "ny-power.fullname" . }}-metricsrolebindsystem
-  namespace: kube-system
-roleRef:
-  apiGroup: rbac.authorization.k8s.io
-  kind: ClusterRole
-  name: {{ template "ny-power.fullname" . }}-metricsrole
-subjects:
-  - kind: ServiceAccount
-    name:  {{ template "ny-power.fullname" . }}-metricssa
-    namespace: default
----
 apiVersion: batch/v1
 kind: Job
 metadata:
