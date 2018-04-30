@@ -11,19 +11,30 @@ rules:
   resources: ["secrets"]
   verbs: ["create"]
 ---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ template "ny-power.fullname" . }}-readersa
+  namespace: default
+imagePullSecrets:
+- name: bluemix-default-secret
+- name: bluemix-default-secret-regional
+- name: bluemix-default-secret-international
+
+---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: {{ template "ny-power.fullname" . }}-read-services
   namespace: default
 subjects:
-- kind: Group
-  name: system:serviceaccounts
-  apiGroup: rbac.authorization.k8s.io
+- kind: ServiceAccount
+  name: {{ template "ny-power.fullname" . }}-readersa
+  namespace: default
 roleRef:
   kind: Role
   name: {{ template "ny-power.fullname" . }}-services-reader
-  apiGroup: rbac.authorization.k8s.io
+  apiGroup: ""
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -47,6 +58,7 @@ spec:
         release: {{ .Release.Name }}
     spec:
       revisionHistoryLimit: 2
+      serviceAccountName: {{ template "ny-power.fullname" . }}-readersa
       initContainers:
       - name: {{ template "ny-power.fullname" . }}-web-init
         image: "{{ .Values.image.repository }}/{{.Values.ibmCloud.image.name }}:{{.Values.ibmCloud.image.version }}"
