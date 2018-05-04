@@ -34,7 +34,7 @@ def mqtt():
 
 @app.route("/current/co2")
 def current_co2():
-    client = InfluxDBClient(HOST, 8086, 'root', 'root', 'fuel-mix')
+    client = InfluxDBClient(INFLUXDB_HOST, 8086, 'root', 'root', 'fuel-mix')
     results = client.query("select last(value) from co2_current")
     points = results.get_points()
     val = next(points)
@@ -42,7 +42,7 @@ def current_co2():
 
 @app.route("/range/co2")
 def range_co2():
-    client = InfluxDBClient(HOST, 8086, 'root', 'root', 'fuel-mix')
+    client = InfluxDBClient(INFLUXDB_HOST, 8086, 'root', 'root', 'fuel-mix')
     results = client.query("select value from co2_current")
     points = results.get_points()
 
