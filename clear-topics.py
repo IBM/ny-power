@@ -3,7 +3,7 @@
 import os
 import subprocess
 
-PASSWORD=os.environ.get("MQTT_PASS", "")
+PASSWORD = os.environ.get("MQTT_PASS", "")
 
 OLD_TOPICS = [
     "ny-power/updated/fuel-mix",
@@ -16,7 +16,7 @@ OLD_TOPICS = [
     "ny-power/fuel-mix/Hydro",
     "ny-power/co2",
     "ny-power/archive/co2_24h"
-]
+    ]
 
 for topic in OLD_TOPICS:
     cmd = ["/usr/bin/mosquitto_pub", "-u", "pump", "-P", PASSWORD,
