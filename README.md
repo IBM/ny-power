@@ -1,6 +1,21 @@
 [![Build Status](https://travis-ci.org/IBM/ny-power.svg?branch=master)](https://travis-ci.org/IBM/ny-power)
 
-# Making public data available as an event stream #
+# Turning Open Data into an Open Event Stream with MQTT and microservices #
+
+We're fortunate that more institutions are publishing their data in
+the open. However, those formats aren't always the most accessible for
+consuming that data in applications. Take for instance the NY ISO data
+on the NY power grid. This 5 minute resolution data on the state of
+the grid is best served as an event stream.
+
+Once we have converted the raw data into an event stream we can add
+additional processing. For instance, estimating the CO<sub>2</sub>
+emissions generated over the course of the day. All of this is done as
+a series of microservices on Kubernetes, each tackling one specific
+part of the problem. This makes debug and adding new features much
+easier.
+
+## The Problem in Depth
 
 We recently bought a Chevy Bolt EV, which we use as our primary
 vehicle. We charge at home with a Level 2 charger. When should we
