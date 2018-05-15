@@ -1,8 +1,28 @@
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: {{ template "ny-power.fullname" . }}-readersa
+  labels:
+    app: {{ template "ny-power.name" . }}-readersa
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+imagePullSecrets:
+- name: bluemix-default-secret
+- name: bluemix-default-secret-regional
+- name: bluemix-default-secret-international
+---
 kind: Role
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   namespace: default
   name: {{ template "ny-power.fullname" . }}-services-reader
+  labels:
+    app: {{ template "ny-power.name" . }}-services-reader
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 rules:
 - apiGroups: [""] # "" indicates the core API group
   resources: ["services"]
@@ -11,22 +31,16 @@ rules:
   resources: ["secrets"]
   verbs: ["create"]
 ---
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: {{ template "ny-power.fullname" . }}-readersa
-  namespace: default
-imagePullSecrets:
-- name: bluemix-default-secret
-- name: bluemix-default-secret-regional
-- name: bluemix-default-secret-international
-
----
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
   name: {{ template "ny-power.fullname" . }}-read-services
   namespace: default
+  labels:
+    app: {{ template "ny-power.name" . }}-read-services
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
 subjects:
 - kind: ServiceAccount
   name: {{ template "ny-power.fullname" . }}-readersa
@@ -99,7 +113,6 @@ metadata:
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
-  type: LoadBalancer
   ports:
   - port: 80
     targetPort: 5000
@@ -108,3 +121,21 @@ spec:
   selector:
     app: {{ template "ny-power.name" . }}-web
     release: {{ .Release.Name }}
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: {{ template "ny-power.fullname" . }}-www-ingress
+  labels:
+    app: {{ template "ny-power.name" . }}-www-ingress
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  rules:
+  - http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ template "ny-power.fullname" . }}-web
+          servicePort: 80
