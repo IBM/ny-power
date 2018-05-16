@@ -133,10 +133,25 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   rules:
-  - host: ny-power.org
+  - host: "*.ny-power.org"
     http:
       paths:
       - path: /
+        backend:
+          serviceName: {{ template "ny-power.fullname" . }}-web
+          servicePort: 5000
+      - path: "/*"
+        backend:
+          serviceName: {{ template "ny-power.fullname" . }}-web
+          servicePort: 5000
+  - host: "ny-power.org"
+    http:
+      paths:
+      - path: "/"
+        backend:
+          serviceName: {{ template "ny-power.fullname" . }}-web
+          servicePort: 5000
+      - path: "/*"
         backend:
           serviceName: {{ template "ny-power.fullname" . }}-web
           servicePort: 5000
