@@ -32,12 +32,16 @@ metadata:
 spec:
   secretName: {{ template "ny-power.fullname" . }}-letsncrypt-prod
   dnsNames:
-    - www.{{ .Release.Name }}.ny-power.org
+    {{- range .Values.ingress.hostnames }}
+    - {{ . }}
+    {{- end }}
   acme:
     config:
     - ingressClass: nginx
       domains:
-      - www.{{ .Release.Name }}.ny-power.org
+      {{- range .Values.ingress.hostnames }}
+        - {{ . }}
+      {{- end }}
   issuerRef:
     name: {{ template "ny-power.fullname" . }}-cl-issuer
     # We can reference ClusterIssuers by changing the kind here.
