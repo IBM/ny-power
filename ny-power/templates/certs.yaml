@@ -3,6 +3,7 @@ apiVersion: certmanager.k8s.io/v1alpha1
 kind: ClusterIssuer
 metadata:
   name: {{ template "ny-power.fullname" . }}-cl-issuer
+  namespace: default
   labels:
     app: {{ template "ny-power.name" . }}-cl-issuer
     chart: {{ template "ny-power.chart" . }}
@@ -13,10 +14,10 @@ spec:
     # The ACME server URL
     server: https://acme-v01.api.letsencrypt.org/directory
     # Email address used for ACME registration
-    email: sean@dague.net
+    email: sean.dague@ibm.com
     # Name of a secret used to store the ACME account private key
     privateKeySecretRef:
-      name: {{ template "ny-power.fullname" . }}-letsncrypt-prod
+      name: {{ template "ny-power.fullname" . }}-letsncrypt-priv
     # Enable HTTP01 validations
     http01: {}
 ---
@@ -24,6 +25,7 @@ apiVersion: certmanager.k8s.io/v1alpha1
 kind: Certificate
 metadata:
   name: {{ template "ny-power.fullname" . }}-cert
+  namespace: default
   labels:
     app: {{ template "ny-power.name" . }}-cert
     chart: {{ template "ny-power.chart" . }}
@@ -31,13 +33,15 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   secretName: {{ template "ny-power.fullname" . }}-letsncrypt-prod
+  commonName: {{ .Values.ingress.hostnames | first }}
   dnsNames:
     {{- range .Values.ingress.hostnames }}
     - {{ . }}
     {{- end }}
   acme:
     config:
-    - ingressClass: nginx
+    - http01:
+        ingress: {{ template "ny-power.fullname" . }}-www-ingress
       domains:
       {{- range .Values.ingress.hostnames }}
         - {{ . }}
