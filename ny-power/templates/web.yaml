@@ -131,19 +131,7 @@ metadata:
     chart: {{ template "ny-power.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
-  {{- if .Values.useCert }}
-  annotations:
-    certmanager.k8s.io/cluster-issuer: {{ template "ny-power.fullname" . }}-cl-issuer
-  {{- end }}
 spec:
-  {{- if .Values.useCert }}
-  tls:
-  - secretName: {{ template "ny-power.fullname" . }}-letsncrypt-prod
-    hosts:
-  {{- range .Values.ingress.hostnames }}
-    - {{ . }}
-  {{- end }}
-  {{- end }}
   rules:
   {{- range .Values.ingress.hostnames }}
   - host: {{ . }}
