@@ -7,6 +7,7 @@ for i in {1..300}; do
     if [[ -z "$MQTT_HOST" ]]; then
         sleep 2
     else
+        kubectl delete secret ${MQTT_SECRET_NAME}
         kubectl create secret generic ${MQTT_SECRET_NAME} --from-literal=host=${MQTT_HOST}
         exit 0
     fi

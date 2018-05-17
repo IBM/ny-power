@@ -29,7 +29,7 @@ rules:
   verbs: ["get"]
 - apiGroups: [""] # "" indicates the core API group
   resources: ["secrets"]
-  verbs: ["create"]
+  verbs: ["create", "delete"]
 ---
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
