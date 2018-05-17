@@ -41,7 +41,7 @@ spec:
   acme:
     config:
     - http01:
-        ingress: {{ template "ny-power.fullname" . }}-www-ingress
+        ingressClass: nginx
       domains:
       {{- range .Values.ingress.hostnames }}
         - {{ . }}
