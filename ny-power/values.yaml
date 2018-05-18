@@ -30,7 +30,7 @@ base:
 ibmCloud:
   image:
     name: ny-power-ibm-cloud
-    version: 6
+    version: 9
 
 web:
   image:
