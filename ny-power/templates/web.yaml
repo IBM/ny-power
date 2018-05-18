@@ -1,4 +1,11 @@
+# The web.yaml specifies everything needed for bringing up the web
+# service that serves the console pages. This needs a bit of trickery
+# as it needs to expose the LB ip address for the MQTT server. That
+# requires kubernetes API calls to look it up, and the ability to
+# store it somewhere (we put it in a secret). To be secure this is
+# done with a dedicated service account and an init container.
 ---
+# A service account is provisioned for security purposes.
 apiVersion: v1
 kind: ServiceAccount
 metadata:
@@ -8,6 +15,8 @@ metadata:
     chart: {{ template "ny-power.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+# For the service account to have access to the IBM Cloud Container
+# Registry, it needs these additional secrets.
 imagePullSecrets:
 - name: bluemix-default-secret
 - name: bluemix-default-secret-regional
@@ -23,14 +32,19 @@ metadata:
     chart: {{ template "ny-power.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
+# These rules allow us to make the service query, and write access to
+# secrets. Delete is also granted so that we replace the secret on
+# every boot, in case there have been service changes since the last
+# web startup.
 rules:
-- apiGroups: [""] # "" indicates the core API group
+- apiGroups: [""]
   resources: ["services"]
   verbs: ["get"]
-- apiGroups: [""] # "" indicates the core API group
+- apiGroups: [""]
   resources: ["secrets"]
   verbs: ["create", "delete"]
 ---
+# Standard role binding, connect these together.
 kind: RoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
 metadata:
@@ -73,6 +87,8 @@ spec:
     spec:
       revisionHistoryLimit: 2
       serviceAccountName: {{ template "ny-power.fullname" . }}-readersa
+      # An initContainer is used here with the kubectl tools installed
+      # to do the kube API query before we boot up.
       initContainers:
       - name: {{ template "ny-power.fullname" . }}-web-init
         image: "{{ .Values.image.repository }}/{{.Values.ibmCloud.image.name }}:{{.Values.ibmCloud.image.version }}"
