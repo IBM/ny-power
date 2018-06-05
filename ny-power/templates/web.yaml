@@ -106,6 +106,10 @@ spec:
         ports:
         - containerPort: 80
         env:
+          {{- if .Values.web.google_analytics }}
+          - name: GOOGLE_ANALYTICS
+            value: "{{ .Values.web.google_analytics }}"
+          {{- end }}
           - name: INFLUXDB_HOST
             value: {{ template "ny-power.fullname" . }}-influx
           - name: MQTT_HOST

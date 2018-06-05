@@ -16,14 +16,15 @@ app = Flask(__name__)
 INFLUXDB_HOST = os.environ.get("INFLUXDB_HOST")
 MQTT_HOST = os.environ.get("MQTT_HOST")
 MQTT_PUMP_PASS = os.environ.get("MQTT_PUMP_PASS")
+GOOGLE = os.environ.get("GOOGLE_ANALYTICS", "")
 
 @app.route("/")
 def index():
-    return render_template("index.html", mqtt_host=MQTT_HOST)
+    return render_template("index.html", mqtt_host=MQTT_HOST, google_analytics=GOOGLE)
 
 @app.route("/mqtt")
 def mqtt():
-    return render_template("mqtt.html", mqtt_host=MQTT_HOST)
+    return render_template("mqtt.html", mqtt_host=MQTT_HOST, google_analytics=GOOGLE)
 
 @app.route("/current/co2")
 def current_co2():

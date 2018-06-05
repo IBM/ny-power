@@ -9,7 +9,7 @@ mqtt:
   secret: AbadSecret
   image:
     name: ny-power-mqtt
-    version: 4
+    version: 1
   storage:
     size: 1Gi
     class: "ibmc-file-silver"
@@ -17,7 +17,7 @@ mqtt:
 influx:
   image:
     name: ny-power-influxdb
-    version: 3
+    version: 1
   storage:
     size: 20Gi
     class: "ibmc-file-silver"
@@ -25,17 +25,18 @@ influx:
 base:
   image:
     name: ny-power-base
-    version: 7
+    version: 1
 
 ibmCloud:
   image:
     name: ny-power-ibm-cloud
-    version: 9
+    version: 1
 
 web:
   image:
     name: ny-power-web
-    version: 16
+    version: 1
+# google_analytics: <id>
 
 image:
   repository: registry.ng.bluemix.net/ny-power
