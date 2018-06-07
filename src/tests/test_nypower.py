@@ -7,13 +7,8 @@ import pytest
 
 from click.testing import CliRunner
 
-from nypower import nypower
-from nypower import mqtt
-from nypower import calc
-from nypower import collector
 from nypower.cmd import pump
 from nypower.cmd import archive
-from nypower.cmd import backlog
 
 
 @pytest.fixture

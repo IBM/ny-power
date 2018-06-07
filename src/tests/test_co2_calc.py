@@ -5,12 +5,7 @@
 
 import pytest
 
-
-from nypower import nypower
-from nypower import mqtt
-from nypower import calc
 from nypower import collector
-from nypower.cmd import pump
 
 FUELS = {
     "Dual Fuel": 2282,
