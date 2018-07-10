@@ -92,38 +92,67 @@ to:
 * [Influxdb](https://www.influxdata.com/): time series database
 * [Python](https://www.python.org/): main programming language used for all logic
 
-# Watch the video
+# Prerequisites
+
+Before proceeding you'll need to following:
+
+1. An
+   [IBM Cloud Account](https://www.ibm.com/cloud/container-service/resources) with
+   Pay-Go level access - *kubernetes clusters require a paid account,
+   and the pattern uses Ingress Controllers and Load Balancer which
+   aren't available at the free tier*
+2. Install [IBM developer
+   tools](https://github.com/IBM-Cloud/ibm-cloud-developer-tools#idt-macos--linux-installation)
+3. Install [Helm](https://docs.helm.sh/using_helm/#installing-helm)
+4. Install ``make`` on your platform to make it easy to build images.
 
 # Steps
 
-## 1. Install and configure Helm
+## 1. Create you Kubernetes cluster
 
-Install Helm. Full instructions are
-at [docs.helm.sh](https://docs.helm.sh/using_helm/#installing-helm)
+Create a Kubernetes cluster in
+the
+[IBM Cloud Web Console](https://console.bluemix.net/containers-kubernetes/catalog/cluster/create).
+This pattern will work on the smallest node type (2x4), with a single
+node cluster, in a single availability zone. It can be installed in
+any region.
 
-Create a new cluster in IBM Cloud and initialize helm for it:
+**Note:** it takes approximately 20 minutes for a kubernetes cluster
+to spin up. That needs to be done before the next step will work.
+
+## 2. Setup IBM Tools and Helm
+
+After the Kubernetes cluster is ready, it is time to configure all the
+tools locally.
 
 ```
-# Create cluster
-$ bx cs cluster-create <clustername>
+# Log into IBM cloud
+$ ibmcloud login
 
-# Set kubectl config for it
-$ $(bx cs cluster-config <clusternam> | grep export)
+# List active clusters
+$ ibmcloud cs clusters
+```
+
+If you see your cluster as `normal` you can proceed.
+
+```
+# Setup kubectl for your cluster
+$ $(ibmcloud cs cluster-config <clustername> | grep export)
 
 # Initialize helm
 $ helm init
 ```
 
-## 2. Configure Container Registry
+## 3. Configure Container Registry
 
 The ny-power application needs to upload a number of custom
 images. You need to create a custom container registry to upload into.
 
 ```
-$ bx cr namespace-add ny-power
+$ ibmcloud cr namespace-add ny-power
 ```
 
-## 3. Build required images
+## 4. Build required images
 
 5 images are needed for the application to run. In order to simplify
 this there are 2 makefile targets that exist to generate and display
@@ -142,42 +171,70 @@ The image versions can be displayed with
 $ make image-versions
 ```
 
-## 4. Update Helm values.yaml
+**Note:** Image building takes approximately 2 minutes
 
-Open up `ny-power/values.yaml` and edit the image versions in the
-yaml.
+## 5. Create Helm overrides.yaml
 
-You can optionally change the shared secret under `mqtt.secret` as
-well. This is a shared secret needed to provide write access to the
-mqtt stream.
-
-## 5. Install with Helm
+There is a versioned configuration for the `ny-power` application at
+`ny-power/values.yaml`. To deploy in your environment you'll need to
+create an overrides file that's specific to your install.
 
 ```
-$ heml install ny-power
+# copy overrides sample
+$ cp overrides.yaml.sample overrides.yaml
 ```
 
-This will autogenerate a unique name such as laughing-frog. Helm
-allows you to have more than one version of an application running at
-the same time in the same cluster for developent, qa, or A/B testing
+There are 3 types of information that must be updated:
+
+The first is the image versions. `make image-versions` will return a
+list of version numbers that can be set in the overrides.yaml.
+
+The second is the ingress host.
+
+```
+# Get the Ingress Subdomain
+$ ibmcloud cs cluster-get <clustername>
+```
+
+Look for the `Ingress Subdomain` field.
+
+The third is the shared secret for the MQTT service. Choose any secret
+you want.
+
+## 6. Install with Helm
+
+```
+$ heml install ny-power -f overrides.yaml --name nytest
+```
+
+This will deploy the ny-power app with the name `nytest`. Helm allows
+you to have more than one version of an application running at the
+same time in the same cluster for developent, qa, or A/B testing
 purposes.
+
+It also specifies to use your override values. This allows you to
+change those without impacting versioned configuration for the
+application.
 
 You can see the status of deployment with:
 
 ```
-$ heml status <laughing-frog>
+$ heml status nytest
 ```
 
-## 6. Make changes and experiment
+**Note:** Initial Deployment takes 3 - 5 minutes. Most of the time is
+spent provisioning persistent volumes for MQTT and Ingress pods.
+
+## 7. Make changes and experiment
 
 As you make changes to the application, either in the helm
 configuration, or make changes to the applications and images, you can
 do a live upgrade of the cluster.
 
-Set any updated image versions in your `values.yaml` and run:
+Set any updated image versions in your `overrides.yaml` and run:
 
 ```
-$ helm upgrade <laughing-frog> ny-power
+$ helm upgrade -f overrides.yaml nytest ny-power
 ```
 
 # Sample output
@@ -187,53 +244,65 @@ $ helm upgrade <laughing-frog> ny-power
 A successful deployment looks like the following:
 
 ```
-$ helm status lovely-sasquatch
-LAST DEPLOYED: Mon Apr  9 10:03:51 2018
+$ helm status nytest
+LAST DEPLOYED: Tue Jul 10 10:24:04 2018
 NAMESPACE: default
 STATUS: DEPLOYED
 
 RESOURCES:
 ==> v1/Secret
-NAME                                 TYPE    DATA  AGE
-lovely-sasquatch-ny-power-mqtt-pump  Opaque  1     5h
+NAME                       TYPE    DATA  AGE
+nytest-ny-power-mqtt-pump  Opaque  1     3m
 
-==> v1/PersistentVolumeClaim
-NAME                                  STATUS  VOLUME                                    CAPACITY  ACCESS MODES  STORAGECLASS      AGE
-lovely-sasquatch-ny-power-influx-nfs  Bound   pvc-47abb773-3bf4-11e8-aca5-da75763193ce  20Gi      RWX           ibmc-file-silver  5h
-lovely-sasquatch-ny-power-mqtt-nfs    Bound   pvc-47ac4f95-3bf4-11e8-aca5-da75763193ce  20Gi      RWX           ibmc-file-silver  5h
-
-==> v1/Role
-NAME                                       AGE
-lovely-sasquatch-ny-power-services-reader  5h
+==> v1/ServiceAccount
+NAME                      SECRETS  AGE
+nytest-ny-power-readersa  1        3m
 
 ==> v1/RoleBinding
-NAME                                     AGE
-lovely-sasquatch-ny-power-read-services  5h
+NAME                           AGE
+nytest-ny-power-read-services  3m
 
 ==> v1/Service
-NAME                              TYPE          CLUSTER-IP      EXTERNAL-IP   PORT(S)                      AGE
-lovely-sasquatch-ny-power-influx  ClusterIP     172.21.251.185  <none>        8086/TCP                     5h
-lovely-sasquatch-ny-power-mqtt    LoadBalancer  172.21.112.218  169.60.82.10  1883:30350/TCP,80:30403/TCP  5h
-lovely-sasquatch-ny-power-web     LoadBalancer  172.21.27.24    169.60.82.12  80:32332/TCP                 4h
+NAME                    TYPE          CLUSTER-IP      EXTERNAL-IP    PORT(S)                      AGE
+nytest-ny-power-influx  ClusterIP     172.21.190.64   <none>         8086/TCP                     3m
+nytest-ny-power-mqtt    LoadBalancer  172.21.189.72   169.60.78.154  1883:32230/TCP,80:31009/TCP  3m
+nytest-ny-power-web     ClusterIP     172.21.180.134  <none>         5000/TCP                     3m
+
+==> v1/PersistentVolumeClaim
+NAME                        STATUS  VOLUME                                    CAPACITY  ACCESS MODES  STORAGECLASS      AGE
+nytest-ny-power-influx-nfs  Bound   pvc-e5e38aca-844c-11e8-894f-0a833e5777dc  20Gi      RWX           ibmc-file-silver  3m
+nytest-ny-power-mqtt-nfs    Bound   pvc-e5e4354c-844c-11e8-894f-0a833e5777dc  20Gi      RWX           ibmc-file-silver  3m
+
+==> v1/Role
+NAME                             AGE
+nytest-ny-power-services-reader  3m
 
 ==> v1/Deployment
-NAME                               DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
-lovely-sasquatch-ny-power-archive  1        1        1           1          5h
-lovely-sasquatch-ny-power-pump     1        1        1           1          5h
-lovely-sasquatch-ny-power-influx   1        1        1           1          5h
-lovely-sasquatch-ny-power-mqtt     1        1        1           1          5h
-lovely-sasquatch-ny-power-web      2        2        2           2          4h
+NAME                     DESIRED  CURRENT  UP-TO-DATE  AVAILABLE  AGE
+nytest-ny-power-archive  1        1        1           1          3m
+nytest-ny-power-pump     1        1        1           1          3m
+nytest-ny-power-influx   1        1        1           1          3m
+nytest-ny-power-mqtt     1        1        1           1          3m
+nytest-ny-power-web      2        2        2           2          3m
+
+==> v1beta1/Ingress
+NAME                         HOSTS                                         ADDRESS        PORTS  AGE
+nytest-ny-power-www-ingress  sdague-k001.us-east.containers.mybluemix.net  169.60.78.158  80     3m
 
 ==> v1/Pod(related)
-NAME                                                READY  STATUS   RESTARTS  AGE
-lovely-sasquatch-ny-power-archive-7c4fb447f7-vxhf7  1/1    Running  0         5h
-lovely-sasquatch-ny-power-pump-86dd6fd597-77dtp     1/1    Running  1         5h
-lovely-sasquatch-ny-power-influx-687bbffbc5-z586j   1/1    Running  0         5h
-lovely-sasquatch-ny-power-mqtt-5c4d7744b5-pp77l     1/1    Running  0         5h
-lovely-sasquatch-ny-power-web-764dd7797c-95wsl      1/1    Running  0         4h
-lovely-sasquatch-ny-power-web-764dd7797c-x9dfv      1/1    Running  0         4h
+NAME                                      READY  STATUS   RESTARTS  AGE
+nytest-ny-power-archive-6449595859-4kf98  1/1    Running  0         3m
+nytest-ny-power-pump-6bffd5ffb5-j7lm5     1/1    Running  1         3m
+nytest-ny-power-influx-66f4789cd8-rqw8z   1/1    Running  0         3m
+nytest-ny-power-mqtt-569ddb657d-mblr9     1/1    Running  0         3m
+nytest-ny-power-web-56c54b69c5-sb56s      1/1    Running  0         3m
+nytest-ny-power-web-56c54b69c5-snbmd      1/1    Running  0         3m
 
 ```
+
+You will be able to browse to your `Ingress Subdomain` (in this
+example: http://sdague-k001.us-east.containers.mybluemix.net) and see
+the application running.
 
 ## Application
 

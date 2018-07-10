@@ -1,0 +1,40 @@
+# Override values for ny-power.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# The replicas for the web front end
+# replicaCount: 2
+
+mqtt:
+  secret: <please fill>
+
+# Determine the value for the hostname by doing:
+#
+#   $ ibmcloud cs cluster-get <cluster-name>
+#
+# Look for `Ingress Subdomain`
+
+ingress:
+  hostnames:
+    - "<please fill>"
+
+# IMAGES
+mqtt:
+  image:
+    version: 2
+
+influx:
+  image:
+    version: 2
+
+base:
+  image:
+    version: 2
+
+ibmCloud:
+  image:
+    version: 2
+
+web:
+  image:
+    version: 2
