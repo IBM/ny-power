@@ -1,3 +1,5 @@
+*Read this in other languages: [日本語](README-ja.md).*
+
 [![Build Status](https://travis-ci.org/IBM/ny-power.svg?branch=master)](https://travis-ci.org/IBM/ny-power)
 
 # Turning Open Data into an Open Event Stream with MQTT and microservices #
