@@ -1,4 +1,4 @@
-*他の言語で読む: [English](README.md).*
+*他の言語で読む: [English](README.md), [한국어](README-ko.md).*
 
 [![Build Status](https://travis-ci.org/IBM/ny-power.svg?branch=master)](https://travis-ci.org/IBM/ny-power)
 
@@ -153,7 +153,7 @@ $ ibmcloud cs cluster-get <clustername>
 ## 6. Helm を使ってインストールします
 
 ```
-$ heml install ny-power -f overrides.yaml --name nytest
+$ helm install ny-power -f overrides.yaml --name nytest
 ```
 
 これは `nytest` という名前の ny-power アプリケーションをデプロイします。Helm を使用すると、開発、qa、A/Bテストなどの目的で、同じクラスター内で複数のバージョンのアプリケーションを同時に実行できます。
@@ -162,7 +162,7 @@ $ heml install ny-power -f overrides.yaml --name nytest
 
 次のようにして、デプロイの状態を確認できます:
 ```
-$ heml status nytest
+$ helm status nytest
 ```
 
 **ノート:** 最初のデプロイには3〜5分かかります。そのほとんどの時間は、MQTT および Ingress ポッド用の永続ボリュームの準備に費やされます。
