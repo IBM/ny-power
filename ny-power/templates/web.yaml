@@ -122,6 +122,13 @@ spec:
               secretKeyRef:
                 name: {{ template "ny-power.fullname" . }}-mqtt-pump
                 key: password
+        readinessProbe:
+          httpGet:
+            path: /
+            port: 5000
+          initialDelaySeconds: 15
+          timeoutSeconds: 1
+
 ---
 apiVersion: v1
 kind: Service
