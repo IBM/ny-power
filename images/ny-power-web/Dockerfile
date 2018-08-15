@@ -5,12 +5,9 @@ ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 ENV FLASK_APP /www/app.py
 
-RUN apt-get update && apt-get install -y python3 python3-pip && apt-get clean
+RUN apt-get -qq update && apt-get dist-upgrade -qq && apt-get install -qq python3 python3-pip && apt-get clean
 
-RUN pip3 install -U flask
-RUN pip3 install -U influxdb
-RUN pip3 install -U paho-mqtt
-RUN rm -rf /root/.cache
+RUN pip3 install -U flask influxdb paho-mqtt && rm -rf /root/.cache
 
 RUN groupadd -r www && useradd --no-log-init -r -g www www
 RUN mkdir -p /www/ && chown -R www /www
