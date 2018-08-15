@@ -32,7 +32,8 @@ def on_message(client, userdata, msg):
         (root, computed, field) = msg.topic.split("/")
         influx.save_computed(field, data["ts"], data["units"], data["value"])
         # and archive
-        since = "24h"
+        # because of EST we really need to go back 28h from a UTC timestamp.
+        since = "28h"
         series = influx.get_timeseries("co2_computed", since)
         client.publish("ny-power/archive/co2/%s" % since,
                        json.dumps(series),
