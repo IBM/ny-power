@@ -1,4 +1,4 @@
-*Read this in other languages: [日本語](README-ja.md).*
+*Read this in other languages: [日本語](README-ja.md), [한국어](README-ko.md).*
 
 [![Build Status](https://travis-ci.org/IBM/ny-power.svg?branch=master)](https://travis-ci.org/IBM/ny-power)
 
@@ -206,7 +206,7 @@ you want.
 ## 6. Install with Helm
 
 ```
-$ heml install ny-power -f overrides.yaml --name nytest
+$ helm install ny-power -f overrides.yaml --name nytest
 ```
 
 This will deploy the ny-power app with the name `nytest`. Helm allows
@@ -221,7 +221,7 @@ application.
 You can see the status of deployment with:
 
 ```
-$ heml status nytest
+$ helm status nytest
 ```
 
 **Note:** Initial Deployment takes 3 - 5 minutes. Most of the time is
