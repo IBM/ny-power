@@ -149,6 +149,73 @@ spec:
     app: {{ template "ny-power.name" . }}-web
     release: {{ .Release.Name }}
 ---
+{{- if .Values.enable_istio }}
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ template "ny-power.fullname" . }}-gateway
+  labels:
+    app: {{ template "ny-power.name" . }}-gateway
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    istio: ingressgateway # use istio default controller
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ template "ny-power.fullname" . }}-virtual-service-www
+  labels:
+    app: {{ template "ny-power.name" . }}-virtual-service-www
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  hosts:
+    - '*'
+  gateways:
+    - {{ template "ny-power.fullname" . }}-gateway
+  http:
+    - route:
+        - destination:
+            host: istio-prod-ny-power-web
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  annotations:
+    kubernetes.io/ingress.class: istio
+  name: {{ template "ny-power.fullname" . }}-www-ingress
+  labels:
+    app: {{ template "ny-power.name" . }}-www-ingress
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  rules:
+  {{- range .Values.ingress.hostnames }}
+  - host: {{ . }}
+    http:
+      paths:
+      - path: /
+        backend:
+          serviceName: {{ template "ny-power.fullname" $ }}-web
+          servicePort: 5000
+      - path: "/*"
+        backend:
+          serviceName: {{ template "ny-power.fullname" $ }}-web
+          servicePort: 5000
+  {{- end }}
+{{- else }}
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
@@ -173,3 +240,5 @@ spec:
           serviceName: {{ template "ny-power.fullname" $ }}-web
           servicePort: 5000
   {{- end }}
+
+{{- end }}

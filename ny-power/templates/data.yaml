@@ -69,3 +69,20 @@ spec:
               secretKeyRef:
                 name: {{ template "ny-power.fullname" . }}-mqtt-pump
                 key: password
+{{- if .Values.enable_istio }}
+---
+# This allows the pump to access the external world
+apiVersion: networking.istio.io/v1alpha3
+kind: ServiceEntry
+metadata:
+  name: {{ template "ny-power.fullname" . }}
+spec:
+  hosts:
+  - mis.nyiso.com
+  ports:
+  - number: 80
+    name: http
+    protocol: HTTP
+  resolution: DNS
+  location: MESH_EXTERNAL
+{{- end }}

@@ -63,6 +63,7 @@ metadata:
 spec:
   ports:
   - port: 8086
+    name: http
     targetPort: 8086
     name: {{ template "ny-power.name" . }}-influx
     protocol: TCP

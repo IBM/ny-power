@@ -75,6 +75,60 @@ spec:
               port: 1883
             initialDelaySeconds: 15
             periodSeconds: 20
+{{- if .Values.enable_istio }}
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: {{ template "ny-power.fullname" . }}-mqtt
+  labels:
+    app: {{ template "ny-power.name" . }}-mqtt
+    chart: {{ template "ny-power.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    app: {{ template "ny-power.name" . }}-mqtt
+    release: {{ .Release.Name }}
+  servers:
+  - port:
+      number: 1883
+      name: mqtt
+      protocol: TCP
+    hosts:
+    - "*"
+  - port:
+      number: 80
+      name: http
+      protocol: TCP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: {{ template "ny-power.fullname" . }}-mqtt
+spec:
+  hosts:
+  - {{ template "ny-power.fullname" . }}-mqtt
+  gateways:
+  - {{ template "ny-power.fullname" . }}-mqtt
+  tcp:
+  - match:
+    - port: 1883
+    route:
+    - destination:
+        host: {{ template "ny-power.fullname" . }}-mqtt
+        port:
+          number: 1883
+  - match:
+    - port: 80
+    route:
+    - destination:
+        host: {{ template "ny-power.fullname" . }}-mqtt
+        port:
+          number: 80
+{{- end }}
 ---
 apiVersion: v1
 kind: Service
