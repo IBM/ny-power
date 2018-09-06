@@ -141,7 +141,7 @@ metadata:
     heritage: {{ .Release.Service }}
 spec:
   ports:
-  - port: 5000
+  - port: 80
     targetPort: 5000
     name: {{ template "ny-power.fullname" . }}-web
     protocol: TCP
@@ -149,7 +149,7 @@ spec:
     app: {{ template "ny-power.name" . }}-web
     release: {{ .Release.Name }}
 ---
-{{- if .Values.enable_istio }}
+{{- if .Values.enable_istio2 }}
 apiVersion: networking.istio.io/v1alpha3
 kind: Gateway
 metadata:
@@ -187,7 +187,7 @@ spec:
   http:
     - route:
         - destination:
-            host: istio-prod-ny-power-web
+            host: {{ template "ny-power.fullname" . }}-web
 ---
 apiVersion: extensions/v1beta1
 kind: Ingress
@@ -209,11 +209,7 @@ spec:
       - path: /
         backend:
           serviceName: {{ template "ny-power.fullname" $ }}-web
-          servicePort: 5000
-      - path: "/*"
-        backend:
-          serviceName: {{ template "ny-power.fullname" $ }}-web
-          servicePort: 5000
+          servicePort: 80
   {{- end }}
 {{- else }}
 apiVersion: extensions/v1beta1
@@ -234,11 +230,11 @@ spec:
       - path: /
         backend:
           serviceName: {{ template "ny-power.fullname" $ }}-web
-          servicePort: 5000
+          servicePort: 80
       - path: "/*"
         backend:
           serviceName: {{ template "ny-power.fullname" $ }}-web
-          servicePort: 5000
+          servicePort: 80
   {{- end }}
 
 {{- end }}
